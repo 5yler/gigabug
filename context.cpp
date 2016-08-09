@@ -28,11 +28,11 @@ Context::Context(Commander *commander, DCServo *servo,
   PIDController *pos,
   ros::NodeHandle *nh,
   JetsonCommander *jcommander,
-  gigatron::Radio *radio_msg,
+  gigatron_hardware::Radio *radio_msg,
   ros::Publisher *radio_pub,
-  gigatron::Steering *steer_msg,
+  gigatron_hardware::Steering *steer_msg,
   ros::Publisher *steer_pub,
-  gigatron::Motors *mot_msg,
+  gigatron_hardware::Motors *mot_msg,
   ros::Publisher *mot_pub
   ) {
   _commander = commander;

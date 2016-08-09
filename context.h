@@ -21,9 +21,9 @@
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Float32.h>
 
-#include <gigatron/Radio.h>
-#include <gigatron/Steering.h>
-#include <gigatron/Motors.h>
+#include <gigatron_hardware/Radio.h>
+#include <gigatron_hardware/Steering.h>
+#include <gigatron_hardware/Motors.h>
 
 
 class Context {
@@ -36,11 +36,11 @@ public:
           PIDController *pos,
           ros::NodeHandle *nh,
           JetsonCommander *jcommander,
-          gigatron::Radio *radio_msg,
+          gigatron_hardware::Radio *radio_msg,
           ros::Publisher *radio_pub,
-          gigatron::Steering *steer_msg,
+          gigatron_hardware::Steering *steer_msg,
           ros::Publisher *steer_pub,
-          gigatron::Motors *mot_msg,
+          gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           );
   void ConfigureLoop(int sInterval, int pInterval);
@@ -60,13 +60,13 @@ private:
   ros::NodeHandle *_nh;
   JetsonCommander *_jcommander;
 
-  gigatron::Radio *_radio_msg;
+  gigatron_hardware::Radio *_radio_msg;
   ros::Publisher *_radio_pub;
 
-  gigatron::Steering *_steer_msg;
+  gigatron_hardware::Steering *_steer_msg;
   ros::Publisher *_steer_pub;
 
-  gigatron::Motors *_mot_msg;
+  gigatron_hardware::Motors *_mot_msg;
   ros::Publisher *_mot_pub;
 };
 

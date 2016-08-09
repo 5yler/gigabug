@@ -28,9 +28,9 @@
 #include <std_msgs/UInt16.h>    //$ for mode switching
 
 //$ debugging messages
-#include <gigatron/Radio.h>
-#include <gigatron/Steering.h>
-#include <gigatron/Motors.h>
+#include <gigatron_hardware/Radio.h>
+#include <gigatron_hardware/Steering.h>
+#include <gigatron_hardware/Motors.h>
 
 
 
@@ -61,9 +61,9 @@ PIDController rSp(20, 0, 1, 250, 0);
 
 PIDController pPos(150, 0, 15, 255, -255); //250, 1, 50
 
-gigatron::Radio radio_msg;
-gigatron::Steering steer_msg;
-gigatron::Motors mot_msg;
+gigatron_hardware::Radio radio_msg;
+gigatron_hardware::Steering steer_msg;
+gigatron_hardware::Motors mot_msg;
 
 
 void CmdCallback(const geometry_msgs::Vector3& cmd) {
@@ -180,11 +180,11 @@ void setup() {
           PIDController *pos,
           ros::NodeHandle *nh,
           JetsonCommander *jcommander,
-          gigatron::Radio *radio_msg,
+          gigatron_hardware::Radio *radio_msg,
           ros::Publisher *radio_pub,
-          gigatron::Steering *steer_msg,
+          gigatron_hardware::Steering *steer_msg,
           ros::Publisher *steer_pub,
-          gigatron::Motors *mot_msg,
+          gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
   Context context(&rc, &servo, &left, &right, lPwm, rPwm, lRev, rRev, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub);
