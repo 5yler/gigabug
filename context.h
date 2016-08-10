@@ -21,10 +21,14 @@
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Float32.h>
 
+//$ motor commands
+#include <gigatron_hardware/MotorCommand.h>
+
+//$ debugging messages
 #include <gigatron_hardware/Radio.h>
 #include <gigatron_hardware/Steering.h>
 #include <gigatron_hardware/Motors.h>
-
+#include <std_msgs/UInt8.h>
 
 class Context {
 public:
@@ -41,7 +45,9 @@ public:
           gigatron_hardware::Steering *steer_msg,
           ros::Publisher *steer_pub,
           gigatron_hardware::Motors *mot_msg,
-          ros::Publisher *mot_pub
+          ros::Publisher *mot_pub,
+          std_msgs::UInt8 *mode_msg,
+          ros::Publisher *mode_pub
           );
   void ConfigureLoop(int sInterval, int pInterval);
   void Start();
@@ -68,6 +74,10 @@ private:
 
   gigatron_hardware::Motors *_mot_msg;
   ros::Publisher *_mot_pub;
+
+  std_msgs::UInt8 *_mode_msg;
+  ros::Publisher *_mode_pub;
+
 };
 
 #endif

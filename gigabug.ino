@@ -20,19 +20,17 @@
 #include "isr.h"
 #define USE_USBCON
 #include <ros.h>
-//#include <ros/node_handle.h>
-//#include <ArduinoHardware.h>
 
-#include <geometry_msgs/Vector3.h>
-#include <std_msgs/Float32.h>   //$ for steering odometry stuff and mode
-#include <std_msgs/UInt16.h>    //$ for mode switching
+#include <geometry_msgs/Vector3.h>  //$ for gain adjustment
+#include <std_msgs/UInt8.h>        //$ for mode switching
+
+//$ motor commands
+#include <gigatron_hardware/MotorCommand.h>
 
 //$ debugging messages
 #include <gigatron_hardware/Radio.h>
 #include <gigatron_hardware/Steering.h>
 #include <gigatron_hardware/Motors.h>
-
-
 
 #define LOOP_INTERVAL 10
 #define S_LOOP_INTERVAL 100
@@ -53,48 +51,28 @@ ros::NodeHandle nh;       //$ node handle
 // JetsonCommander(ros::NodeHandle *nh);
 JetsonCommander jc(&nh);  //$ Jetson commander
 
-//PIDController lSp(2, 1, 1, 255, 0);
-//PIDController rSp(2, 1, 1, 255, 0);
-
-PIDController lSp(50, 0, 1, 250, 0);
-PIDController rSp(20, 0, 1, 250, 0);
+//PIDController(long kp, long ki, long kd, long out_max, long out_min)
+PIDController lSp(50, 0, 1, 250, -250);
+PIDController rSp(50, 0, 1, 250, -250);
 
 PIDController pPos(150, 0, 15, 255, -255); //250, 1, 50
 
 gigatron_hardware::Radio radio_msg;
 gigatron_hardware::Steering steer_msg;
 gigatron_hardware::Motors mot_msg;
+std_msgs::UInt8 mode_msg;
 
+void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
 
-void CmdCallback(const geometry_msgs::Vector3& cmd) {
-
-  jc._angle = cmd.x;
-  jc._left_vel = cmd.y;
-  jc._right_vel = cmd.z;
+  jc._angle = cmd.angle_command;
+  jc._rpm_left = cmd.rpm_left;
+  jc._rpm_right = cmd.rpm_right;
 }
 
 /*$ Swith between radio RC and autonomous/Jetson RC mode.
 */
-void SwitchCallback(const std_msgs::UInt16& mode) {
-
+void SwitchCallback(const std_msgs::UInt8& mode) {
   jc._autonomous = mode.data;
-  if (mode.data == 2) { //$ set pins for fully autonomous throttle
-    //digitalWrite(lRev, HIGH);
-    //digitalWrite(rRev, HIGH);
-  }
-  /*
-    if (mode.data == 0) {
-     jc._jetsonMode = false;
-     jc._semiautomaticMode = false;
-    }
-    else if (mode.data == 2) {
-     jc._jetsonMode = true;
-     jc._semiautomaticMode = false;
-    }
-    else if (mode.data == 1) { //$ manual throttle, autonomous steering
-     jc._jetsonMode = false;
-     jc._semiautomaticMode = true;
-    }*/
 }
 
 /*$ Set PID controller gains for both drive motors with a
@@ -111,32 +89,15 @@ void GainsCallback(const geometry_msgs::Vector3& gain) {
 
 void setup() {
 
-  /*$
-     For some reason rosserial_arduino is very particular about the baud
-     rate setting, and will break in confusing ways if you don't set it
-     right. The value below should match that in the launch file for
-     Arduino control, in gigatron/launch/arduino_control.launch
-         <param name="baud" value="<BAUD>"/>
-
-     If it breaks, try one of these:
-     300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, or 115200
-     Do not try: 14400, 28800 (these will break)
-   * */
-
-   /*$
-     For some reason rosserial_arduino breaks if you do both 
-     Serial.begin(<BAUD>) and nh.initNode(). So either do:
-     1. Serial.begin(<BAUD>)
-     2. nh.getHardware()->setBaud(38400);
-        nh.initNode();
-     Both of the two options seem to work equally well.
-   * */
-    Serial.begin(115200);
-//
-//  Serial.begin(19200);
-  //nh.getHardware()->setBaud(460800);
-////
-  //nh.initNode();
+/*$
+   For some reason rosserial_arduino breaks if you do both 
+   Serial.begin(<BAUD>) and nh.initNode(). So either do:
+   1. Serial.begin(<BAUD>)
+   2. nh.getHardware()->setBaud(38400);
+      nh.initNode();
+   Both of the two options seem to work equally well.
+  */
+  Serial.begin(115200);
 
   //$ set up publishers
   ros::Publisher radio_pub("arduino/radio", &radio_msg);
@@ -145,15 +106,16 @@ void setup() {
   nh.advertise(mot_pub);
   ros::Publisher steer_pub("arduino/steering", &steer_msg);
   nh.advertise(steer_pub);
+  ros::Publisher mode_pub("arduino/mode", &mode_msg);
+  nh.advertise(mode_pub);
 
   //$ set up subscribers
-  ros::Subscriber<geometry_msgs::Vector3> sub("control", CmdCallback);
+  ros::Subscriber<gigatron_hardware::MotorCommand> sub("arduino/command/motors", CmdCallback);
   nh.subscribe(sub);
-  ros::Subscriber<std_msgs::UInt16> switchsub("switch", SwitchCallback);
+  ros::Subscriber<std_msgs::UInt8> switchsub("arduino/command/mode", SwitchCallback);
   nh.subscribe(switchsub);
-  ros::Subscriber<geometry_msgs::Vector3> gainsub("gains", GainsCallback);
+  ros::Subscriber<geometry_msgs::Vector3> gainsub("arduino/command/gains", GainsCallback);
   nh.subscribe(gainsub);
-
   
   // RCDecoder(int interrupt, int minV, int maxV);
   RCDecoder pos(0, 984, 1996);
@@ -187,13 +149,12 @@ void setup() {
           gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
-  Context context(&rc, &servo, &left, &right, lPwm, rPwm, lRev, rRev, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub);
+  Context context(&rc, &servo, &left, &right, lPwm, rPwm, lRev, rRev, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
   context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL);
   TCCR3B &= ~7;
   TCCR3B |= 2;
-
 
   context.Start(); // the actual looping happens here
 

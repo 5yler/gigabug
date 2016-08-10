@@ -16,7 +16,7 @@
 #include "classes.h"
 #include "isr.h"
 
-#define PULSES_PER_REV 600 //$ number of encoder pulses per full motor revolution
+#define PULSES_PER_REV 600.0 //$ number of encoder pulses per full motor revolution
 
 SpeedSensor::SpeedSensor(int interrupt, int poles, int interval) {
   _interrupt = interrupt;
@@ -62,27 +62,25 @@ long SpeedSensor::GetTicks() {
   return ticks;
 }
 
-/*
+
 //$ TODO: this is unsigned, need to fix!
-unsigned int SpeedSensor::GetSpeed() {
+long SpeedSensor::GetRPM() {
   long ticks;
 
   if (_interrupt == L_ENCODER_INTERRUPT) {// If we are the left sensor
     ticks = _ticks_left;
-    // dp(sp); //$ do not uncomment this print statement if you want your Hall sensors to work
     _ticks_left = 0;
   } else if (_interrupt == R_ENCODER_INTERRUPT) { // right sensor
     ticks = _ticks_right;
-    // dp(sp); //$ see above - do not uncomment this print statement unless you add delay somehow  
     _ticks_right = 0;
   }
   
-  long motor_revs = ticks / PULSES_PER_REV;
-  double wheel_revs = motor_revs * gearRatio;
+  double motor_revs = (double) ticks / PULSES_PER_REV;
+  // double wheel_revs = motor_revs * gearRatio;
+  // double rpm = wheel_revs * (60.0 * 1000) / _interval;
+  double rpm = motor_revs * (60.0 * 1000) / _interval;
 
-  double rpm = wheel_revs * (60.0 * 1000) / _interval;
-
-  return rpm; 
+  return (long) rpm; 
 
   /*$ old code that does not apply to quadrature encoders
       plus DGonz's filter
@@ -100,7 +98,7 @@ unsigned int SpeedSensor::GetSpeed() {
     //  dp(rpmSmooth);
       return (unsigned int) rpmSmooth;
 
-  
+  */
+
 }
-*/
 
