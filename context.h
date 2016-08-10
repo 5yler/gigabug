@@ -49,7 +49,7 @@ public:
           std_msgs::UInt8 *mode_msg,
           ros::Publisher *mode_pub
           );
-  void ConfigureLoop(int sInterval, int pInterval);
+  void ConfigureLoop(int sInterval, int pInterval, int pubInterval);
   void Start();
 
 private:
@@ -58,9 +58,9 @@ private:
   SpeedSensor *_left, *_right;
   int _lPwm, _rPwm, _lRev, _rRev;
   PIDController *_lSp, *_rSp, *_pos;
-  int _sInterval, _pInterval;
+  int _sInterval, _pInterval, _pubInterval;
   
-  unsigned long _last_st, _last_pt;
+  unsigned long _last_st, _last_pt, _last_pub;
 
   //$
   ros::NodeHandle *_nh;

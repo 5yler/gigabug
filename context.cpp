@@ -59,6 +59,7 @@ Context::Context(Commander *commander, DCServo *servo,
   _steer_pub = steer_pub;
   _mot_msg = mot_msg; 
   _mot_pub = mot_pub;
+  _mode_msg = mode_msg;
   _mode_pub = mode_pub;
   
   pinMode(_lPwm, OUTPUT);
@@ -74,9 +75,10 @@ Context::Context(Commander *commander, DCServo *servo,
   @param  sInterval  [ms] speed loop interval 
   @param  pInterval  [ms] position loop interval 
   */
-  void Context::ConfigureLoop(int sInterval, int pInterval) {
+  void Context::ConfigureLoop(int sInterval, int pInterval, int pubInterval) {
     _sInterval = sInterval;
     _pInterval = pInterval;
+    _pubInterval = pubInterval;
   }
 
 
@@ -96,7 +98,7 @@ Context::Context(Commander *commander, DCServo *servo,
     _mot_msg->usec_left = 1500;
     _mot_msg->usec_right = 1500;
 
-    _mode_msg->data = 0;
+//    _mode_msg->data = 0;
 
     _last_st = _last_pt = millis();
 
@@ -104,11 +106,14 @@ Context::Context(Commander *commander, DCServo *servo,
     unsigned int oldMode = 2;
 
     for (;;) {
+
     _nh->spinOnce(); //$ spin node handle
+
     
     unsigned long t = millis();
     unsigned long d_st = t - _last_st;
     unsigned long d_pt = t - _last_pt;
+    unsigned long d_pub = t - _last_pub;
 
         // KILLSWITCH ENGAGE \m/
     if (_commander->GetKillCmd() > 75) {
@@ -132,15 +137,23 @@ Context::Context(Commander *commander, DCServo *servo,
     int lSpC;
     int rSpC;
 
-      //left and right microsecond write values for motor controller
+    //left and right microsecond write values for motor controller
     unsigned int luSec;
     unsigned int ruSec;
+
+    //$ sensed RPM values
+    int lRPM_sensed;
+    int rRPM_sensed;
     
+    //$ steering 
+    unsigned char pC; //$ PWM command
+    unsigned char pS; //$ PWM sensed
+
     if (d_st > _sInterval) {  //$ speed (drive motor) loop
       //$ left and right speed commands
 
-      int lRPM_sensed = _left->GetRPM();
-      int rRPM_sensed = _right->GetRPM();
+      lRPM_sensed = _left->GetRPM();
+      rRPM_sensed = _right->GetRPM();
       //$ get values from RC commander or Jetson commander
       if (_jcommander->_autonomous > 1) { //$ fully autonomous mode
 
@@ -148,10 +161,9 @@ Context::Context(Commander *commander, DCServo *servo,
         int lRPM_cmd = _jcommander->GetLeftRPMCmd();
         int rRPM_cmd = _jcommander->GetRightRPMCmd();
         
-
         //$ update PID controllers
-       lSpC = - _lSp->Update(lRPM_cmd, lRPM_sensed);
-       rSpC = - _rSp->Update(rRPM_cmd, rRPM_sensed);
+        lSpC = - _lSp->Update(lRPM_cmd, lRPM_sensed);
+        rSpC = - _rSp->Update(rRPM_cmd, rRPM_sensed);
 
       }
       else { //$ RC mode and semiautomatic mode
@@ -169,7 +181,29 @@ Context::Context(Commander *commander, DCServo *servo,
       rightMotor.writeMicroseconds(ruSec);
 
       _last_st = t;
-      
+
+    }
+
+
+    if (d_pt > _pInterval) { //$ position (steering servo) loop
+      if (_jcommander->_autonomous == 0) { //$ RC mode
+        pC = _commander->GetAngleCmd();
+      }
+      else  { //$ mixed mode and fully autonomous mode
+        pC = _jcommander->GetAngleCmd();
+      }  
+      pS = _servo->GetPosLinearized();
+
+      int vel = _pos->Update(pC, pS); //$ update PID controller
+
+      //$ command analogWrite/digitalWrite
+      _servo->SetVelocity(vel);
+
+      _last_pt = t;
+
+    }
+
+    if (d_pub > _pubInterval) { //$ publishing loop
       //$ write wheel velocities
       _mot_msg->rpm_left = lRPM_sensed;
       _mot_msg->rpm_right = rRPM_sensed;
@@ -192,28 +226,6 @@ Context::Context(Commander *commander, DCServo *servo,
       _mode_msg->data = _jcommander->_autonomous;
       _mode_pub->publish(_mode_msg);
 
-    }
-
-    if (d_pt > _pInterval) { //$ position (steering servo) loop
-      unsigned char pC;
-      if (_jcommander->_autonomous == 0) { //$ RC mode
-        pC = _commander->GetAngleCmd();
-      }
-      else  { //$ mixed mode and fully autonomous mode
-        pC = _jcommander->GetAngleCmd();
-      }  
-      unsigned char pS = _servo->GetPosLinearized();
-
-      int vel = _pos->Update(pC, pS); //$ update PID controller
-
-      //$ command analogWrite/digitalWrite
-      _servo->SetVelocity(vel);
-
-      _last_pt = t;
-
-      //$ steering servo position and Hall effect readings
-      double servoPWM = (double) pS;
-      double steeringAngle = STEERING_ANGLE_RANGE * (servoPWM / STEERING_PWM_RANGE) - ABS_MAX_STEERING_ANGLE;
 
       //$ write steering angle and servo PWM command to message
       _steer_msg->angle = pS;
@@ -222,7 +234,10 @@ Context::Context(Commander *commander, DCServo *servo,
       //$ publish message
       _steer_pub->publish(_steer_msg);
 
+      _last_pub = t;
+
     }
+    
   }
 }
 

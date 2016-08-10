@@ -27,9 +27,6 @@
 //$ motor commands
 #include <gigatron_hardware/MotorCommand.h>
 
-//$ motor commands
-#include <gigatron_hardware/MotorCommand.h>
-
 //$ debugging messages
 #include <gigatron_hardware/Radio.h>
 #include <gigatron_hardware/Steering.h>
@@ -37,6 +34,7 @@
 
 #define LOOP_INTERVAL 10
 #define S_LOOP_INTERVAL 100
+#define PUB_INTERVAL 100
 
 //$ steering pot calibration
 int minADU = 463; //462, all right
@@ -74,7 +72,9 @@ void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
 /*$ Swith between radio RC and autonomous/Jetson RC mode.
 */
 void SwitchCallback(const std_msgs::UInt8& mode) {
-  jc._autonomous = mode.data;
+  if (jc._autonomous != mode.data) {
+    jc._autonomous = mode.data;
+  }
 }
 
 /*$ Set PID controller gains for both drive motors with a
@@ -116,8 +116,9 @@ void setup() {
   nh.subscribe(sub);
   ros::Subscriber<std_msgs::UInt8> switchsub("arduino/command/mode", SwitchCallback);
   nh.subscribe(switchsub);
-  ros::Subscriber<geometry_msgs::Vector3> gainsub("arduino/command/gains", GainsCallback);
-  nh.subscribe(gainsub);
+//  ros::Subscriber<geometry_msgs::Vector3> gainsub("arduino/command/gains", GainsCallback);
+//  nh.subscribe(gainsub);
+
   
   // RCDecoder(int interrupt, int minV, int maxV);
   RCDecoder pos(0, 984, 1996);
@@ -154,7 +155,7 @@ void setup() {
   Context context(&rc, &servo, &left, &right, lPwm, rPwm, lRev, rRev, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
-  context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL);
+  context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL, PUB_INTERVAL);
   TCCR3B &= ~7;
   TCCR3B |= 2;
 

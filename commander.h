@@ -47,7 +47,7 @@ public:
   unsigned char _angle;
   long _rpm_left, _rpm_right;
   
-  unsigned char _autonomous;
+  int _autonomous;
 /*
   boolean _jetsonMode; //$ true for Jetson control, false for RC
   boolean _semiautomaticMode; //$ true for Jetson control, false for RCprivate:
