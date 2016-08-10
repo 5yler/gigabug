@@ -27,6 +27,9 @@
 //$ motor commands
 #include <gigatron_hardware/MotorCommand.h>
 
+//$ motor commands
+#include <gigatron_hardware/MotorCommand.h>
+
 //$ debugging messages
 #include <gigatron_hardware/Radio.h>
 #include <gigatron_hardware/Steering.h>
@@ -63,7 +66,6 @@ gigatron_hardware::Motors mot_msg;
 std_msgs::UInt8 mode_msg;
 
 void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
-
   jc._angle = cmd.angle_command;
   jc._rpm_left = cmd.rpm_left;
   jc._rpm_right = cmd.rpm_right;
