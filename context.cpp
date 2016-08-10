@@ -60,10 +60,6 @@ Context::Context(Commander *commander, DCServo *servo,
   
   pinMode(_lPwm, OUTPUT);
   pinMode(_rPwm, OUTPUT);
-  //pinMode(_lRev, OUTPUT);
-  //pinMode(_rRev, OUTPUT);
-  //digitalWrite(_lRev, HIGH);
-  //digitalWrite(_rRev, HIGH);
 
   //ROBOCLAW
   leftMotor.attach(_lPwm);
@@ -86,8 +82,6 @@ Context::Context(Commander *commander, DCServo *servo,
     //$ clear messages
     _radio_msg->speed_left = 0;
     _radio_msg->speed_right = 0;
-    _radio_msg->dir_left = 0;
-    _radio_msg->dir_right = 0;
     _radio_msg->angle = 128;
     _radio_msg->kill = 0;
 
@@ -140,29 +134,24 @@ Context::Context(Commander *commander, DCServo *servo,
     if (d_st > _sInterval) {  //$ speed (drive motor) loop
       //$ left and right speed commands
 
-      int l_ticks = _left->GetTicks();
-      int r_ticks = _right->GetTicks();
+      int lRPM_sensed = _left->GetRPM();
+      int rRPM_sensed = _right->GetRPM();
       //$ get values from RC commander or Jetson commander
       if (_jcommander->_autonomous > 1) { //$ fully autonomous mode
 
         //$ commanded values
-        int lRPMC = _jcommander->GetLeftVelCmd();
-        int rRPMC = _jcommander->GetRightVelCmd();
+        int lRPM_cmd = _jcommander->GetLeftRPMCmd();
+        int rRPM_cmd = _jcommander->GetRightRPMCmd();
         
 
         //$ update PID controllers
-//        lSpC = - _lSp->Update(lRPMC, l_ticks);
-//        rSpC = - _rSp->Update(rRPMC, r_ticks);
+       lSpC = - _lSp->Update(lRPM_cmd, lRPM_sensed);
+       rSpC = - _rSp->Update(rRPM_cmd, rRPM_sensed);
 
-        
-
-        // //$ sending open loop commands between -250 (max forward) and 250 (max backward)
-         lSpC = lRPMC;
-         rSpC = rRPMC;
       }
       else { //$ RC mode and semiautomatic mode
-        lSpC = _commander->GetLeftVelCmd();
-        rSpC = _commander->GetRightVelCmd();
+        lSpC = _commander->GetLeftRPMCmd();
+        rSpC = _commander->GetRightRPMCmd();
       }
 
       //$ convert to RoboClaw format of
@@ -175,17 +164,10 @@ Context::Context(Commander *commander, DCServo *servo,
       rightMotor.writeMicroseconds(ruSec);
 
       _last_st = t;
-
-      // double leftWheelRPM = (double) _left->GetSpeed();
-      // double rightWheelRPM = (double) _right->GetSpeed();
-      
-      // //$ write wheel velocities
-      // _mot_msg->rpm_left = leftWheelRPM; * RPM_TO_M_S;
-      // _mot_msg->rpm_right = rightWheelRPM * RPM_TO_M_S;
       
       //$ write wheel velocities
-      _mot_msg->rpm_left = l_ticks;
-      _mot_msg->rpm_right = r_ticks;
+      _mot_msg->rpm_left = lRPM_sensed;
+      _mot_msg->rpm_right = rRPM_sensed;
       _mot_msg->usec_left = ruSec;
       _mot_msg->usec_right = luSec;
 
@@ -193,11 +175,9 @@ Context::Context(Commander *commander, DCServo *servo,
       _mot_pub->publish(_mot_msg);
 
       //$ write 
-      _radio_msg->speed_left = _commander->GetLeftVelCmd();
-      _radio_msg->speed_right = _commander->GetRightVelCmd();
-//      _radio_msg->dir_left = _commander->GetLeftDirectionCmd(); //$ TODO: remove from messages
-//      _radio_msg->dir_right = _commander->GetRightDirectionCmd();
-      _radio_msg->angle = _commander->GetPositionCmd();
+      _radio_msg->speed_left = _commander->GetLeftRPMCmd();
+      _radio_msg->speed_right = _commander->GetRightRPMCmd();
+      _radio_msg->angle = _commander->GetAngleCmd();
       _radio_msg->kill = _commander->GetKillCmd();
 
       _radio_pub->publish(_radio_msg);
@@ -207,10 +187,10 @@ Context::Context(Commander *commander, DCServo *servo,
     if (d_pt > _pInterval) { //$ position (steering servo) loop
       unsigned char pC;
       if (_jcommander->_autonomous == 0) { //$ RC mode
-        pC = _commander->GetPositionCmd();
+        pC = _commander->GetAngleCmd();
       }
       else  { //$ mixed mode and fully autonomous mode
-        pC = _jcommander->GetPositionCmd();
+        pC = _jcommander->GetAngleCmd();
       }  
       unsigned char pS = _servo->GetPosLinearized();
 

@@ -21,10 +21,13 @@
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Float32.h>
 
+//$ motor commands
+#include <gigatron_hardware/MotorCommand.h>
+
+//$ debugging messages
 #include <gigatron_hardware/Radio.h>
 #include <gigatron_hardware/Steering.h>
 #include <gigatron_hardware/Motors.h>
-
 
 class Context {
 public:

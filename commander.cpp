@@ -22,7 +22,7 @@ RCCommander::RCCommander(RCDecoder *sp, RCDecoder *pos, RCDecoder *kill) {
   _kill = kill;
 }
 
-int RCCommander::GetLeftVelCmd() {
+int RCCommander::GetLeftRPMCmd() {
   int left_command = 2 * (int) _sp->GetVal() - 255;
 
   //$ check edge cases
@@ -32,7 +32,7 @@ int RCCommander::GetLeftVelCmd() {
   return left_command;
 }
 
-int RCCommander::GetRightVelCmd() {
+int RCCommander::GetRightRPMCmd() {
   int right_command = 2 * (int) _sp->GetVal() - 255;
 
   //$ check edge cases
@@ -42,7 +42,7 @@ int RCCommander::GetRightVelCmd() {
   return right_command;
 }
 
-unsigned char RCCommander::GetPositionCmd() {
+unsigned char RCCommander::GetAngleCmd() {
   return _pos->GetVal();
 }
 
@@ -62,26 +62,27 @@ JetsonCommander::JetsonCommander(ros::NodeHandle *nh) {
 
   _autonomous = 2;
 
-  _left_vel = 0; 
-  _right_vel = 0; 
-  _angle = 0;
+  _rpm_left = 0; 
+  _rpm_right = 0; 
+  _angle = 128;
 }
 
-int JetsonCommander::GetLeftVelCmd() {
-  // return (int) (_left_vel / RPM_TO_M_S);
+int JetsonCommander::GetLeftRPMCmd() {
+  // return (int) (_rpm_left / RPM_TO_M_S);
   //$ todo: fix math
-  return (int) _left_vel;
+  return (int) _rpm_left;
 }
 
-int JetsonCommander::GetRightVelCmd() {
-  // return (int) (_right_vel / RPM_TO_M_S);
+int JetsonCommander::GetRightRPMCmd() {
+  // return (int) (_rpm_right / RPM_TO_M_S);
   //$ TODO: fix math
-    return (int) _right_vel;
+    return (int) _rpm_right;
 }
 
-unsigned char JetsonCommander::GetPositionCmd() {
-  unsigned char servo_pwm_cmd = (_angle + ABS_MAX_STEERING_ANGLE) * (STEERING_PWM_RANGE / STEERING_ANGLE_RANGE);
-  return servo_pwm_cmd;
+unsigned char JetsonCommander::GetAngleCmd() {
+  // unsigned char servo_pwm_cmd = (_angle + ABS_MAX_STEERING_ANGLE) * (STEERING_PWM_RANGE / STEERING_ANGLE_RANGE);
+  // return servo_pwm_cmd;
+  return _angle;
 }
 
 
