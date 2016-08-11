@@ -22,7 +22,8 @@
 #include <ros.h>
 
 #include <geometry_msgs/Vector3.h>  //$ for gain adjustment
-#include <std_msgs/UInt8.h>        //$ for mode switching
+#include <std_msgs/UInt8.h>         //$ for mode publishing
+#include <std_msgs/Bool.h>          //$ for estop subscriber
 
 //$ motor commands
 #include <gigatron_hardware/MotorCommand.h>
@@ -53,10 +54,13 @@ ros::NodeHandle nh;       //$ node handle
 JetsonCommander jc(&nh);  //$ Jetson commander
 
 //PIDController(long kp, long ki, long kd, long out_max, long out_min)
-PIDController lSp(50, 0, 1, 250, -250);
-PIDController rSp(50, 0, 1, 250, -250);
+PIDController lSp(50, 0, 1, 250, 0); //$ left drive motor PID controller
+PIDController rSp(50, 0, 1, 250, 0); //$ right drive motor PID controller
 
-PIDController pPos(150, 0, 15, 255, -255); //250, 1, 50
+/*$ The PID controllers for the drive motors are only active in AUTO mode. Also autonomous reverse does not work (yet).
+ */
+
+PIDController pPos(150, 0, 15, 255, -255); //$ steering servo PID controller
 
 gigatron_hardware::Radio radio_msg;
 gigatron_hardware::Steering steer_msg;
@@ -69,15 +73,17 @@ void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
   jc._rpm_right = cmd.rpm_right;
 }
 
-/*$ Swith between radio RC and autonomous/Jetson RC mode.
+/*$ 
+  Enable lidar-based estop. 
 */
-void SwitchCallback(const std_msgs::UInt8& mode) {
-  if (jc._autonomous != mode.data) {
-    jc._autonomous = mode.data;
-  }
+void StopCallback(const std_msgs::Bool& mode) {
+//  if (jc._estop != mode.data) {
+    jc._estop = mode.data;
+//  }
 }
 
-/*$ Set PID controller gains for both drive motors with a
+/*$ 
+  Set PID controller gains for both drive motors with a
   Vector3 ROS message (kp, ki, kd) published on the /gains
   topic.
 */
@@ -114,8 +120,8 @@ void setup() {
   //$ set up subscribers
   ros::Subscriber<gigatron_hardware::MotorCommand> sub("arduino/command/motors", CmdCallback);
   nh.subscribe(sub);
-  ros::Subscriber<std_msgs::UInt8> switchsub("arduino/command/mode", SwitchCallback);
-  nh.subscribe(switchsub);
+  ros::Subscriber<std_msgs::Bool> stop_sub("arduino/command/stop", StopCallback);
+  nh.subscribe(stop_sub);
 //  ros::Subscriber<geometry_msgs::Vector3> gainsub("arduino/command/gains", GainsCallback);
 //  nh.subscribe(gainsub);
 

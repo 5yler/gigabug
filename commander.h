@@ -48,6 +48,7 @@ public:
   long _rpm_left, _rpm_right;
   
   int _autonomous;
+  bool _estop;
 /*
   boolean _jetsonMode; //$ true for Jetson control, false for RC
   boolean _semiautomaticMode; //$ true for Jetson control, false for RCprivate:

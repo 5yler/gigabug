@@ -66,7 +66,7 @@ class PIDController {
 public:
   PIDController(long kp, long ki, long kd, long out_max, long out_min);
   int Update(int ref, int in);
-  int ZeroIntegrator();
+  void ResetIntegrator();
   void ResetGains(long kp, long ki, long kd);
 private:
   long _kp, _ki, _kd;

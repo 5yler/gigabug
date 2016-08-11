@@ -30,6 +30,11 @@ void PIDController::ResetGains(long kp, long ki, long kd) {
   _integral = 0;
 }
 
+void PIDController::ResetIntegrator() {
+  _last_in = 0;
+  _integral = 0;
+}
+
 int PIDController::Update(int ref, int in) {
   int error = ref - in;
 

@@ -46,8 +46,8 @@ public:
           ros::Publisher *steer_pub,
           gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub,
-          std_msgs::UInt8 *mode_msg,
-          ros::Publisher *mode_pub
+          std_msgs::UInt8 *stop_msg,
+          ros::Publisher *stop_pub
           );
   void ConfigureLoop(int sInterval, int pInterval, int pubInterval);
   void Start();
@@ -75,8 +75,8 @@ private:
   gigatron_hardware::Motors *_mot_msg;
   ros::Publisher *_mot_pub;
 
-  std_msgs::UInt8 *_mode_msg;
-  ros::Publisher *_mode_pub;
+  std_msgs::UInt8 *_stop_msg;
+  ros::Publisher *_stop_pub;
 
 };
 

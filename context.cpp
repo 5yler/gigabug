@@ -34,8 +34,8 @@ Context::Context(Commander *commander, DCServo *servo,
   ros::Publisher *steer_pub,
   gigatron_hardware::Motors *mot_msg,
   ros::Publisher *mot_pub,
-  std_msgs::UInt8 *mode_msg,
-  ros::Publisher *mode_pub
+  std_msgs::UInt8 *stop_msg,
+  ros::Publisher *stop_pub
   ) {
   _commander = commander;
   _servo = servo;
@@ -59,8 +59,8 @@ Context::Context(Commander *commander, DCServo *servo,
   _steer_pub = steer_pub;
   _mot_msg = mot_msg; 
   _mot_pub = mot_pub;
-  _mode_msg = mode_msg;
-  _mode_pub = mode_pub;
+  _stop_msg = stop_msg;
+  _stop_pub = stop_pub;
   
   pinMode(_lPwm, OUTPUT);
   pinMode(_rPwm, OUTPUT);
@@ -98,7 +98,7 @@ Context::Context(Commander *commander, DCServo *servo,
     _mot_msg->usec_left = 1500;
     _mot_msg->usec_right = 1500;
 
-//    _mode_msg->data = 0;
+//    _stop_msg->data = 0;
 
     _last_st = _last_pt = millis();
 
@@ -115,19 +115,18 @@ Context::Context(Commander *commander, DCServo *servo,
     unsigned long d_pt = t - _last_pt;
     unsigned long d_pub = t - _last_pub;
 
-        // KILLSWITCH ENGAGE \m/
-    if (_commander->GetKillCmd() > 75) {
-      if (_jcommander->_autonomous == 0) { //$ RC
+    // KILLSWITCH ENGAGE \m/
+    if (_commander->GetKillCmd() > 75) 
+    {
+      if (_jcommander->_autonomous == 0) 
+      { //$ RC
         _jcommander->_autonomous = oldMode;
         //$ HALP IT'S GOING IN REVERSE
-//        digitalWrite(_lRev, LOW);
-        //digitalWrite(_rRev, HIGH); 
-        //digitalWrite(_lRev, HIGH); 
-
       }
     }
     else {
-      if (_jcommander->_autonomous > 0) { //$ AUTO or SEMIAUTOMATIC
+      if (_jcommander->_autonomous > 0) 
+      { //$ AUTO or SEMIAUTOMATIC
         oldMode = _jcommander->_autonomous;
       }
       _jcommander->_autonomous = 0;
@@ -155,20 +154,28 @@ Context::Context(Commander *commander, DCServo *servo,
       lRPM_sensed = _left->GetRPM();
       rRPM_sensed = _right->GetRPM();
       //$ get values from RC commander or Jetson commander
-      if (_jcommander->_autonomous > 1) { //$ fully autonomous mode
+      if ((_jcommander->_autonomous > 1) && !(_jcommander->_estop)) { //$ fully autonomous mode (and not estopped)
 
         //$ commanded values
         int lRPM_cmd = _jcommander->GetLeftRPMCmd();
         int rRPM_cmd = _jcommander->GetRightRPMCmd();
         
         //$ update PID controllers
-        lSpC = - _lSp->Update(lRPM_cmd, lRPM_sensed);
-        rSpC = - _rSp->Update(rRPM_cmd, rRPM_sensed);
+        lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
+        rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
 
       }
-      else { //$ RC mode and semiautomatic mode
+      else { //$ RC mode and semiautomatic mode (or estopped)
+        
         lSpC = _commander->GetLeftRPMCmd();
         rSpC = _commander->GetRightRPMCmd();
+
+        //$ reset PID controller integrator term to zero if estopped 
+        if (_jcommander->_estop) {
+          _lSp->ResetIntegrator();
+          _rSp->ResetIntegrator();
+          //$ so it won't go berserk after estop is released
+        }
       }
 
       //$ convert to motor controller format of
@@ -223,8 +230,8 @@ Context::Context(Commander *commander, DCServo *servo,
       _radio_pub->publish(_radio_msg);
 
       //$ publish mode message
-      _mode_msg->data = _jcommander->_autonomous;
-      _mode_pub->publish(_mode_msg);
+      _stop_msg->data = _jcommander->_autonomous;
+      _stop_pub->publish(_stop_msg);
 
 
       //$ write steering angle and servo PWM command to message
