@@ -54,10 +54,10 @@ void LeftISR() {
 
   #ifdef L_ENCODER_REVERSED //$ if left encoder is reversed
     //$ increment counter if B leads A
-    _ticks_left += _read_left ? +1 : -1; //$ if (_read_left) {_ticks_left++;} else {_ticks_left--;}
+    _ticks_left += _read_left ? -1 : +1; //$ if (_read_left) {_ticks_left--;} else {_ticks_left++;}
   #else
     //$ increment counter if A leads B
-    _ticks_left += _read_left ? -1 : +1; //$ if (_read_left) {_ticks_left--;} else {_ticks_left++;}
+    _ticks_left += _read_left ? +1 : -1; //$ if (_read_left) {_ticks_left++;} else {_ticks_left--;}
   #endif
 
 }
@@ -68,10 +68,10 @@ void RightISR() {
 
   #ifdef R_ENCODER_REVERSED //$ if right encoder is reversed
     //$ increment counter if B leads A
-    _ticks_right += _read_right ? +1 : -1; //$ if (_read_right) {_ticks_right++;} else {_ticks_right--;}
+    _ticks_right += _read_right ? -1 : +1; //$ if (_read_right) {_ticks_right++;} else {_ticks_right--;}
   #else
     //$ increment counter if A leads B
-    _ticks_right += _read_right ? -1 : +1; //$ if (_read_right) {_ticks_right--;} else {_ticks_right++;}
+    _ticks_right += _read_right ? +1 : -1; //$ if (_read_right) {_ticks_right--;} else {_ticks_right++;}
   #endif
 
 }
