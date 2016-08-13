@@ -11,9 +11,6 @@
 
  **/
 
-//old servo: 5 pwm, 4 dir, a0 pot
-//new servo: 5 pwm1, 6 pwm2, a0 pot
-
 #include "classes.h"
 #include "commander.h"
 #include "context.h"
@@ -41,12 +38,6 @@
 int minADU = 463; //462, all right
 int midADU = 537; //$ value at zero steering angle
 int maxADU = 587; //638, all left
-
-//$ pin numbers
-int lPwm = 9;
-int rPwm = 10;
-int lRev = 30; //pin 30 left reverse
-int rRev = 31; //pin 31 right reverse
 
 ros::NodeHandle nh;       //$ node handle
 
@@ -125,20 +116,23 @@ void setup() {
 //  ros::Subscriber<geometry_msgs::Vector3> gainsub("arduino/command/gains", GainsCallback);
 //  nh.subscribe(gainsub);
 
-  
+  pinMode(RC_STEERING_PIN, INPUT);
+  pinMode(RC_THROTTLE_PIN, INPUT);
+  pinMode(RC_KILL_PIN, INPUT);
+
   // RCDecoder(int interrupt, int minV, int maxV);
-  RCDecoder pos(0, 984, 1996);
+  RCDecoder pos(RC_STEERING_INTERRUPT, 984, 1996);
   //Was 1480, expanded to add reverse
-  RCDecoder sp(1, 1020, 1990);
+  RCDecoder sp(RC_THROTTLE_INTERRUPT, 1020, 1990);
   //Was 1480, expanded to add reverse
-  RCDecoder kill(2, 996, 1988);
+  RCDecoder kill(RC_KILL_INTERRUPT, 996, 1988);
 
   // SpeedSensor(int interrupt, int poles, int interval);
-  SpeedSensor left(5, 14, S_LOOP_INTERVAL);
-  SpeedSensor right(4, 14, S_LOOP_INTERVAL);
+  SpeedSensor left(L_ENCODER_INTERRUPT, 14, S_LOOP_INTERVAL);
+  SpeedSensor right(R_ENCODER_INTERRUPT, 14, S_LOOP_INTERVAL);
 
   // DCServo(int pwmPin1, int pwmPin2, int posPin);
-  DCServo servo(5, 6, A0);
+  DCServo servo(STEERING_PWM_PIN_1, STEERING_PWM_PIN_2, STEERING_POT_PIN);
 
   // DCServo::ConfigSensor(int minV, int maxV);
   servo.ConfigPot(minADU, midADU, maxADU);
@@ -146,7 +140,7 @@ void setup() {
 
   /* Context(Commander *commander, DCServo *servo,
           SpeedSensor *left, SpeedSensor *right,
-          int lPwm, int rPwm,
+          int L_MOTOR_PWM_PIN, L_MOTOR_PWM_PINrPwm,
           PIDController *lSp, PIDController *rSp,
           PIDController *pos,
           ros::NodeHandle *nh,
@@ -158,7 +152,7 @@ void setup() {
           gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
-  Context context(&rc, &servo, &left, &right, lPwm, rPwm, lRev, rRev, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
+  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
   context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL, PUB_INTERVAL);

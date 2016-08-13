@@ -20,7 +20,7 @@ volatile unsigned long _pw0_last_t, _pw1_last_t, _pw2_last_t;
 volatile long _ticks_left, _ticks_right;  //$ number of ticks for each encoder
 volatile bool _read_left, _read_right;    //$ state of digitalRead(encoder pin B) for each encoder
 
-void ISR0() {
+void RCSteeringISR() {
   int state = digitalRead(2);
   if (state) {
     _pw0_last_t = micros();
@@ -29,7 +29,7 @@ void ISR0() {
   }
 }
 
-void ISR1() {
+void RCThrottleISR() {
   int state = digitalRead(3);
   if (state) {
     _pw1_last_t = micros();
@@ -38,7 +38,7 @@ void ISR1() {
   }
 }
 
-void ISR2() {
+void RCKillISR() {
   int state = digitalRead(21);
   if (state) {
     _pw2_last_t = micros();
@@ -49,7 +49,7 @@ void ISR2() {
 
 //Adapted for quadrature encoder, direction inferred from pulse alignment (11 forward, 10 backward)
 //$ left encoder interrupt service routine
-void LeftISR() { 
+void LeftEncoderISR() { 
   _read_left = digitalReadFast(L_ENCODER_PIN_B); //$ read encoder input pin B
 
   #ifdef L_ENCODER_REVERSED //$ if left encoder is reversed
@@ -63,7 +63,7 @@ void LeftISR() {
 }
 
 //$ right encoder interrupt service routine
-void RightISR() { 
+void RightEncoderISR() { 
   _read_right = digitalReadFast(R_ENCODER_PIN_B); //$ read encoder input pin B
 
   #ifdef R_ENCODER_REVERSED //$ if right encoder is reversed

@@ -39,9 +39,9 @@ SpeedSensor::SpeedSensor(int interrupt, int poles, int interval) {
   pinMode(R_ENCODER_PIN_B, INPUT_PULLUP);
 
   if (_interrupt == R_ENCODER_INTERRUPT) {
-    attachInterrupt(R_ENCODER_INTERRUPT, RightISR, FALLING);
+    attachInterrupt(R_ENCODER_INTERRUPT, RightEncoderISR, FALLING);
   } else {
-    attachInterrupt(L_ENCODER_INTERRUPT, LeftISR, FALLING);
+    attachInterrupt(L_ENCODER_INTERRUPT, LeftEncoderISR, FALLING);
   }
   
   _ticks_left = _ticks_right = 0;
