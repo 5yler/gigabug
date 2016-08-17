@@ -44,10 +44,6 @@ int RCCommander::GetRightRPMCmd() {
 
 unsigned char RCCommander::GetAngleCmd() {
   unsigned long pw = _pos->GetVal();
-  pw = (pw - 0) << 8;
-  pw /= (180);
-  if (pw < 0) pw = 0;
-  if (pw > 180) pw = 180;
   return (unsigned char) pw;
 }
 

@@ -44,6 +44,10 @@ unsigned char RCDecoder::GetVal() {
   pw /= (_maxV - _minV);
   if (pw < 0) pw = 0;
   if (pw > 255) pw = 255;
+
+  //$ convert from 0-255 range to 0-180 range
+  pw *= 180;
+  pw /= 255;
   return (unsigned char) pw;
 }
 
