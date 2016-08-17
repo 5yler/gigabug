@@ -131,11 +131,11 @@ void setup() {
   SpeedSensor left(L_ENCODER_INTERRUPT, 14, S_LOOP_INTERVAL);
   SpeedSensor right(R_ENCODER_INTERRUPT, 14, S_LOOP_INTERVAL);
 
-  // DCServo(int pwmPin1, int pwmPin2, int posPin);
-  DCServo servo(STEERING_PWM_PIN_1, STEERING_PWM_PIN_2, STEERING_POT_PIN);
+  // DCServo(int pwmPin, int posPin);
+  DCServo servo(STEERING_PWM_PIN);
 
   // DCServo::ConfigSensor(int minV, int maxV);
-  servo.ConfigPot(minADU, midADU, maxADU);
+  // servo.ConfigPot(minADU, midADU, maxADU);
   RCCommander rc(&sp, &pos, &kill);
 
   /* Context(Commander *commander, DCServo *servo,

@@ -33,8 +33,7 @@
 #define R_MOTOR_REVERSE_PIN 31
 
 //$ steering servo
-#define STEERING_PWM_PIN_1 5
-#define STEERING_PWM_PIN_2 6
+#define STEERING_PWM_PIN 5
 #define STEERING_POT_PIN A0
 
 //$ RC decoder

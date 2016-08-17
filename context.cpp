@@ -199,12 +199,10 @@ Context::Context(Commander *commander, DCServo *servo,
       else  { //$ mixed mode and fully autonomous mode
         pC = _jcommander->GetAngleCmd();
       }  
-      pS = _servo->GetPosLinearized();
-
-      int vel = _pos->Update(pC, pS); //$ update PID controller
+      pS = _servo->GetPos();
 
       //$ command analogWrite/digitalWrite
-      _servo->SetVelocity(vel);
+      _servo->SetPos(pC);
 
       _last_pt = t;
 
