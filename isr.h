@@ -15,15 +15,15 @@
 #define __ISR_H
 
 //$ left encoder
-#define R_ENCODER_INTERRUPT 4
-#define R_ENCODER_PIN_A 19
-#define R_ENCODER_PIN_B 17
+#define L_ENCODER_INTERRUPT 4
+#define L_ENCODER_PIN_A 19
+#define L_ENCODER_PIN_B 17
 
 //$ right encoder
-#define L_ENCODER_INTERRUPT 5
-#define L_ENCODER_PIN_A 18
-#define L_ENCODER_PIN_B 16
-#define L_ENCODER_REVERSED //$ define that the left encoder is reversed to handle directionality
+#define R_ENCODER_INTERRUPT 5
+#define R_ENCODER_PIN_A 18
+#define R_ENCODER_PIN_B 16
+#define R_ENCODER_REVERSED //$ define that the left encoder is reversed to handle directionality
 
 //$ motors
 #define L_MOTOR_PWM_PIN 9
