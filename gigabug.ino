@@ -34,10 +34,10 @@
 #define S_LOOP_INTERVAL 100
 #define PUB_INTERVAL 100
 
-//$ steering pot calibration
-int minADU = 463; //462, all right
-int midADU = 537; //$ value at zero steering angle
-int maxADU = 587; //638, all left
+//$ steering pot calibration 2016-08-18
+int minADU = 444; //$ max right
+int midADU = 549; //$ value at zero steering angle
+int maxADU = 630; //$ max left
 
 ros::NodeHandle nh;       //$ node handle
 

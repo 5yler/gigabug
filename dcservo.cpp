@@ -44,9 +44,10 @@ void DCServo::SetVelocity(int vel) {
   }
 }
 
+/*$ DEPRECATED */
 unsigned char DCServo::GetPos() {
   long adu = analogRead(_posPin);
-  //dp(adu); //$ uncomment for pot calibration
+  // dp(adu); //$ uncomment for pot calibration
   long tmp = (adu - _minV) << 8 ;;
   tmp /= (_maxV - _minV);
   if (tmp < 0) tmp = 0;
@@ -56,14 +57,9 @@ unsigned char DCServo::GetPos() {
 }
 
 //$ takes pot limits and middle value and linearizes the output
-/* DGonz's measurements as of 9:49pm 9/24/2015
- * 439 in, 0 out
- * 549 in, 127 out
- * 622 in, 255 out
- */
 unsigned char DCServo::GetPosLinearized() {
   long adu = analogRead(_posPin);
-  //dp(adu); //$ uncomment for pot calibration
+  // dp(adu); //$ uncomment for pot calibration
   long tmp;
   if (adu < _midV) {
     tmp = (adu - _minV) << 7 ;;
