@@ -11,6 +11,8 @@
 
  **/
 
+#include <Servo.h>
+#include <digitalWriteFast.h>
 #include "classes.h"
 #include "commander.h"
 #include "context.h"

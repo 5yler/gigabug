@@ -46,3 +46,15 @@ The `DCServo` class for the steering servo and associated potentiometer.
 
 ### `speedsensor.cpp` 
 `SpeedSensor` class for calculating speed based on Hall Effect sensors.
+
+## Getting it all to work
+
+### Install the 'digitalWriteFast' library in the 'Sketchbook/libraries' folder
+(https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/digitalwritefast/digitalWriteFast.zip)
+
+### Install the 'ros_lib' library with gigatron wrappers in 'Sketchbook/libraries' folder
+* Make sure you have the metatron repo cloned into a catkin workspace. For example: 'giga_ws/src/metatron'
+* Run 'catkin_init_workspace' in the /src folder
+* cd to 'giga_ws' and run 'catkin_make'
+* From 'giga_ws' run 'source devel/setup.bash'. Add 'source ~/PATH/TO/giga_ws/devel/setup.bash' to your .bashrc so you don't need to run every time. 
+* cd to your Arduino 'Sketchbook/libraries' folder and run 'rosrun rosserial_arduino make_libraries.py .'. Your code should now compile!
