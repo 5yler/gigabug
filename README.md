@@ -46,3 +46,13 @@ The `DCServo` class for the steering servo and associated potentiometer.
 
 ### `speedsensor.cpp` 
 `SpeedSensor` class for calculating speed based on Hall Effect sensors.
+
+### How To Generate Custom ROS Message Libraries For Arduino
+
+```
+sudo apt-get install arduino arduino-core #installs arduino IDE
+sudo apt-get install ros-indigo-rosserial-arduino #installs Rosserial-arduino
+mkdir ~/sketchbook/libraries #make libraries directory if it doesn’t already exist
+rosrun rosserial_arduino make_libraries.py <ARDUINO_SKETCHBOOK>/libraries
+cd ~/sketchbook; git clone https://github.com/5yler/gigabug.git
+```
