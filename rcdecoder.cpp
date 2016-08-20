@@ -34,6 +34,7 @@ unsigned char RCDecoder::GetVal() {
     pw = _pw0_us;
   } else if (_interrupt == RC_THROTTLE_INTERRUPT) {
     pw = _pw1_us;
+    dp(_pw1_us);
   }if (_interrupt == RC_KILL_INTERRUPT) {
     pw = _pw2_us;
   }
@@ -45,9 +46,12 @@ unsigned char RCDecoder::GetVal() {
   if (pw < 0) pw = 0;
   if (pw > 255) pw = 255;
 
+  if (_interrupt == RC_STEERING_INTERRUPT) {
+
   //$ convert from 0-255 range to 0-180 range
   pw *= 180;
   pw /= 255;
+  }
   return (unsigned char) pw;
 }
 
