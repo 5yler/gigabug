@@ -55,10 +55,11 @@ sudo apt-get install ros-indigo-rosserial-arduino #installs Rosserial-arduino
 mkdir ~/sketchbook/libraries #make libraries directory if it doesn’t already exist
 rosrun rosserial_arduino make_libraries.py <ARDUINO_SKETCHBOOK>/libraries
 cd ~/sketchbook; git clone https://github.com/5yler/gigabug.git
+'''
 
 ## Getting it all to work
 
-### Install the 'digitalWriteFast' library in the 'Sketchbook/libraries' folder
+### Install the digitalWriteFast' library in the 'Sketchbook/libraries' folder
 (https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/digitalwritefast/digitalWriteFast.zip)
 
 ### Install the 'ros_lib' library with gigatron wrappers in 'Sketchbook/libraries' folder
