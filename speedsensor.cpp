@@ -16,7 +16,7 @@
 #include "classes.h"
 #include "isr.h"
 
-#define PULSES_PER_REV 600.0 //$ number of encoder pulses per full motor revolution
+#define PULSES_PER_REV 740.0 //$ number of encoder pulses per full motor revolution
 
 SpeedSensor::SpeedSensor(int interrupt, int poles, int interval) {
   _interrupt = interrupt;
