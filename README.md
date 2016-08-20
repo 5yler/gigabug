@@ -63,8 +63,8 @@ git clone https://github.com/5yler/gigabug.git
 ### Install the `digitalWriteFast` library
 
 
-Put it in the `<ARDUINO_SHETCHBOOK>/libraries` folder
-(https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/digitalwritefast/digitalWriteFast.zip)
+Download the [`digitalWriteFast`](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/digitalwritefast/) library file ([direct `.zip` file link](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/digitalwritefast/digitalWriteFast.zip)) and put it in the `<ARDUINO_SHETCHBOOK>/libraries` folder
+
 
 ### Generate Custom ROS Message Libraries For Arduino
 Make sure you have the `metatron` repository cloned into a catkin workspace. For example: 
