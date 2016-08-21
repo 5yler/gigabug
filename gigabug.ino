@@ -47,8 +47,9 @@ ros::NodeHandle nh;       //$ node handle
 JetsonCommander jc(&nh);  //$ Jetson commander
 
 //PIDController(long kp, long ki, long kd, long out_max, long out_min)
-PIDController lSp(50, 0, 1, 250, 0); //$ left drive motor PID controller
-PIDController rSp(50, 0, 1, 250, 0); //$ right drive motor PID controller
+//Note from DGonz: Low kP, some kI and no kD is best for wheel velocities. 
+PIDController lSp(50, 4, 0, 250, -250); //$ left drive motor PID controller
+PIDController rSp(50, 4, 0, 250, -250); //$ right drive motor PID controller
 
 /*$ The PID controllers for the drive motors are only active in AUTO mode. Also autonomous reverse does not work (yet).
  */

@@ -1,42 +1,42 @@
 /**
  * context.cpp
  * Gigatron motor control Arduino code.
- * 
+ *
  * @author  Bayley Wang   <bayleyw@mit.edu>
  * @author  Syler Wagner  <syler@mit.edu>
  *
  * @date    2015-09-16    syler   fixed odometry message sending
  * @date    2016-01-10    syler   moved PID controller to separate class
- * 
+ *
  **/
 
 #include <Arduino.h>
-#include "Servo.h"
+#include <Servo.h>
 #include "isr.h"
 #include "classes.h"
 #include "commander.h"
 #include "context.h"
- 
+
 Servo leftMotor;
 Servo rightMotor;
 
 Context::Context(Commander *commander, DCServo *servo,
-  SpeedSensor *left, SpeedSensor *right,
-  int lPwm, int rPwm,
-  int lRev, int rRev,
-  PIDController *lSp, PIDController *rSp,
-  PIDController *pos,
-  ros::NodeHandle *nh,
-  JetsonCommander *jcommander,
-  gigatron_hardware::Radio *radio_msg,
-  ros::Publisher *radio_pub,
-  gigatron_hardware::Steering *steer_msg,
-  ros::Publisher *steer_pub,
-  gigatron_hardware::Motors *mot_msg,
-  ros::Publisher *mot_pub,
-  std_msgs::UInt8 *stop_msg,
-  ros::Publisher *stop_pub
-  ) {
+                 SpeedSensor *left, SpeedSensor *right,
+                 int lPwm, int rPwm,
+                 int lRev, int rRev,
+                 PIDController *lSp, PIDController *rSp,
+                 PIDController *pos,
+                 ros::NodeHandle *nh,
+                 JetsonCommander *jcommander,
+                 gigatron_hardware::Radio *radio_msg,
+                 ros::Publisher *radio_pub,
+                 gigatron_hardware::Steering *steer_msg,
+                 ros::Publisher *steer_pub,
+                 gigatron_hardware::Motors *mot_msg,
+                 ros::Publisher *mot_pub,
+                 std_msgs::UInt8 *stop_msg,
+                 ros::Publisher *stop_pub
+                ) {
   _commander = commander;
   _servo = servo;
   _left = left;
@@ -44,7 +44,7 @@ Context::Context(Commander *commander, DCServo *servo,
   _lPwm = lPwm;
   _rPwm = rPwm;
   _lRev = lRev;
-  _rRev = rRev;  
+  _rRev = rRev;
   _lSp = lSp;
   _rSp = rSp;
   _pos = pos;
@@ -53,15 +53,15 @@ Context::Context(Commander *commander, DCServo *servo,
   _jcommander = jcommander; //$ Jetson commander
 
   //$ ROS publishers and messages
-  _radio_msg = radio_msg; 
+  _radio_msg = radio_msg;
   _radio_pub = radio_pub;
-  _steer_msg = steer_msg; 
+  _steer_msg = steer_msg;
   _steer_pub = steer_pub;
-  _mot_msg = mot_msg; 
+  _mot_msg = mot_msg;
   _mot_pub = mot_pub;
   _stop_msg = stop_msg;
   _stop_pub = stop_pub;
-  
+
   pinMode(_lPwm, OUTPUT);
   pinMode(_rPwm, OUTPUT);
 
@@ -70,62 +70,62 @@ Context::Context(Commander *commander, DCServo *servo,
   rightMotor.attach(_rPwm);
 }
 
-/*$ Configure time intervals for speed (drive motor) and 
+/*$ Configure time intervals for speed (drive motor) and
   position (steering servo) loops.
-  @param  sInterval  [ms] speed loop interval 
-  @param  pInterval  [ms] position loop interval 
+  @param  sInterval  [ms] speed loop interval
+  @param  pInterval  [ms] position loop interval
   */
-  void Context::ConfigureLoop(int sInterval, int pInterval, int pubInterval) {
-    _sInterval = sInterval;
-    _pInterval = pInterval;
-    _pubInterval = pubInterval;
-  }
+void Context::ConfigureLoop(int sInterval, int pInterval, int pubInterval) {
+  _sInterval = sInterval;
+  _pInterval = pInterval;
+  _pubInterval = pubInterval;
+}
 
 
-  void Context::Start() {
+void Context::Start() {
 
-    //$ clear messages
-    _radio_msg->speed_left = 0;
-    _radio_msg->speed_right = 0;
-    _radio_msg->angle = 128;
-    _radio_msg->kill = 0;
+  //$ clear messages
+  _radio_msg->speed_left = 0;
+  _radio_msg->speed_right = 0;
+  _radio_msg->angle = 128;
+  _radio_msg->kill = 0;
 
-    _steer_msg->angle = 128;
-    _steer_msg->angle_command = 128;
+  _steer_msg->angle = 128;
+  _steer_msg->angle_command = 128;
 
-    _mot_msg->rpm_left = 0;
-    _mot_msg->rpm_right = 0;
-    _mot_msg->usec_left = 1500;
-    _mot_msg->usec_right = 1500;
+  _mot_msg->rpm_left = 0;
+  _mot_msg->rpm_right = 0;
+  _mot_msg->usec_left = 1500;
+  _mot_msg->usec_right = 1500;
 
-//    _stop_msg->data = 0;
+  //    _stop_msg->data = 0;
 
-    _last_st = _last_pt = millis();
+  _last_st = _last_pt = millis();
 
   //unsigned int oldMode = _jcommander->_autonomous;
-    unsigned int oldMode = 2;
+  unsigned int oldMode = 2;
 
-    for (;;) {
+  for (;;) {
 
     _nh->spinOnce(); //$ spin node handle
 
-    
+
     unsigned long t = millis();
     unsigned long d_st = t - _last_st;
     unsigned long d_pt = t - _last_pt;
     unsigned long d_pub = t - _last_pub;
 
     // KILLSWITCH ENGAGE \m/
-    if (_commander->GetKillCmd() > 75) 
+    if (_commander->GetKillCmd() > 75)
     {
-      if (_jcommander->_autonomous == 0) 
+      if (_jcommander->_autonomous == 0)
       { //$ RC
         _jcommander->_autonomous = oldMode;
         //$ HALP IT'S GOING IN REVERSE
       }
     }
     else {
-      if (_jcommander->_autonomous > 0) 
+      if (_jcommander->_autonomous > 0)
       { //$ AUTO or SEMIAUTOMATIC
         oldMode = _jcommander->_autonomous;
       }
@@ -143,8 +143,8 @@ Context::Context(Commander *commander, DCServo *servo,
     //$ sensed RPM values
     int lRPM_sensed;
     int rRPM_sensed;
-    
-    //$ steering 
+
+    //$ steering
     unsigned char pC; //$ PWM command
     unsigned char pS; //$ PWM sensed
 
@@ -156,21 +156,21 @@ Context::Context(Commander *commander, DCServo *servo,
       //$ get values from RC commander or Jetson commander
       if ((_jcommander->_autonomous > 1) && !(_jcommander->_estop)) { //$ fully autonomous mode (and not estopped)
 
-        //$ commanded values
+        //$ commanded values in desired rpm
         int lRPM_cmd = _jcommander->GetLeftRPMCmd();
         int rRPM_cmd = _jcommander->GetRightRPMCmd();
-        
+
         //$ update PID controllers
         lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
         rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
 
       }
       else { //$ RC mode and semiautomatic mode (or estopped)
-        
+
         lSpC = _commander->GetLeftRPMCmd();
         rSpC = _commander->GetRightRPMCmd();
 
-        //$ reset PID controller integrator term to zero if estopped 
+        //$ reset PID controller integrator term to zero if estopped
         if (_jcommander->_estop) {
           _lSp->ResetIntegrator();
           _rSp->ResetIntegrator();
@@ -198,7 +198,7 @@ Context::Context(Commander *commander, DCServo *servo,
       }
       else  { //$ mixed mode and fully autonomous mode
         pC = _jcommander->GetAngleCmd();
-      }  
+      }
       pS = _servo->GetPosLinearized();
 
       int vel = _pos->Update(pC, pS); //$ update PID controller
@@ -237,14 +237,14 @@ Context::Context(Commander *commander, DCServo *servo,
       //$ write steering angle and servo PWM command to message
       _steer_msg->angle = pS;
       _steer_msg->angle_command = pC;
-      
+
       //$ publish message
       _steer_pub->publish(_steer_msg);
 
       _last_pub = t;
 
     }
-    
+
   }
 }
 
