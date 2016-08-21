@@ -28,6 +28,7 @@ Context::Context(Commander *commander, DCServo *servo,
   PIDController *pos,
   ros::NodeHandle *nh,
   JetsonCommander *jcommander,
+  AutonomousLED *autonomousled,
   gigatron_hardware::Radio *radio_msg,
   ros::Publisher *radio_pub,
   gigatron_hardware::Steering *steer_msg,
@@ -51,6 +52,7 @@ Context::Context(Commander *commander, DCServo *servo,
 
   _nh = nh; //$ ROS node handle
   _jcommander = jcommander; //$ Jetson commander
+  _autonomousled = autonomousled;
 
   //$ ROS publishers and messages
   _radio_msg = radio_msg; 
@@ -245,6 +247,7 @@ Context::Context(Commander *commander, DCServo *servo,
 
     }
     
+    _autonomousled->Update();
   }
 }
 

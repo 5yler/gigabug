@@ -35,6 +35,7 @@
 #define LOOP_INTERVAL 10
 #define S_LOOP_INTERVAL 100
 #define PUB_INTERVAL 100
+#define HALF_SECOND 500
 
 //$ steering pot calibration 2016-08-18
 int minADU = 444; //$ max right
@@ -45,6 +46,8 @@ ros::NodeHandle nh;       //$ node handle
 
 // JetsonCommander(ros::NodeHandle *nh);
 JetsonCommander jc(&nh);  //$ Jetson commander
+
+AutonomousLED aled(AUTONOMOUS_LED_PIN, &(jc->_autonomous), HALF_SECOND);
 
 //PIDController(long kp, long ki, long kd, long out_max, long out_min)
 PIDController lSp(50, 0, 1, 250, 0); //$ left drive motor PID controller
@@ -154,7 +157,7 @@ void setup() {
           gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
-  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
+  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &aled, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
   context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL, PUB_INTERVAL);

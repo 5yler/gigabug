@@ -47,6 +47,8 @@
 #define RC_KILL_INTERRUPT 2
 #define RC_KILL_PIN 21
 
+//$ Mode indicator LED
+#define AUTONOMOUS_LED_PIN 37
 
 extern volatile unsigned long _pw0_us, _pw1_us, _pw2_us;
 extern volatile unsigned long _pw0_last_t, _pw1_last_t, _pw2_last_t;

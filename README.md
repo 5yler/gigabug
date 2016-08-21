@@ -47,6 +47,9 @@ The `DCServo` class for the steering servo and associated potentiometer.
 ### `speedsensor.cpp` 
 `SpeedSensor` class for calculating speed based on Hall Effect sensors.
 
+### `autonomousled.cpp`
+`AutonomousLED` turns an LED on when autonomous, blinks at ~1Hz when semiautomatic, and is off when in remote control mode.
+
 ### How To Generate Custom ROS Message Libraries For Arduino
 
 ```
