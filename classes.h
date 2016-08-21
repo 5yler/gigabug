@@ -11,9 +11,6 @@
 #ifndef __CLASSES_H
 #define __CLASSES_H
 
-#include "Servo.h"
-
-
 #define dp(var) Serial.print(#var);Serial.print(": ");Serial.println(var)
 
 class DCServo {

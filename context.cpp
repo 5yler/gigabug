@@ -11,7 +11,6 @@
  **/
 
 #include <Arduino.h>
-#include "Servo.h"
 #include "isr.h"
 #include "classes.h"
 #include "commander.h"

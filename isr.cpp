@@ -11,7 +11,6 @@
  **/
 
 #include <Arduino.h>
-#include <digitalWriteFast.h>
 #include "isr.h"
 
 volatile unsigned long _pw0_us, _pw1_us, _pw2_us;
