@@ -7,10 +7,11 @@
  * @date    2016-01-10    syler   refactored header files
  *
  **/
-
 #ifndef __CLASSES_H
 #define __CLASSES_H
 
+#include <Servo.h>
+ 
 #define dp(var) Serial.print(#var);Serial.print(": ");Serial.println(var)
 
 class DCServo {
