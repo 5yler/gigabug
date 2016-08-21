@@ -78,7 +78,7 @@ private:
 
 class AutonomousLED {
 public:
-  AutonomousLED(int led_pin, unsigned long period_millis);
+  AutonomousLED(int led_pin, int *autonomous_mode_ptr, unsigned long period_millis);
   void Update();
 private:
   int _led_pin;
@@ -86,7 +86,7 @@ private:
   bool _led_on;
   unsigned long _period_millis;
   unsigned long _last_changed;
-}
+};
   
 
 #endif

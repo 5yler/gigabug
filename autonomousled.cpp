@@ -15,7 +15,7 @@
 #define SEMIAUTOMATIC 1
 #define REMOTE_CONTROL 0
 
-AutonomousLED::AutonomousLED(int led_pin, int *autonomous_mode_ptr, unsigned long period_millis) {
+ AutonomousLED::AutonomousLED(int led_pin, int *autonomous_mode_ptr, unsigned long period_millis) {
   _led_pin = led_pin;
   _autonomous_mode_ptr = autonomous_mode_ptr;
   _period_millis = period_millis;
@@ -23,32 +23,46 @@ AutonomousLED::AutonomousLED(int led_pin, int *autonomous_mode_ptr, unsigned lon
   _last_changed = 0;
   pinMode(_led_pin, OUTPUT);
   digitalWrite(_led_pin, LOW);
-  this.Update();
+  Update();
 }
 
 void AutonomousLED::Update() {
-  switch(*autonomous_mode_ptr) {
+  switch(*_autonomous_mode_ptr) 
+  {
     case AUTONOMOUS:
+    {
       _led_on = true;
       digitalWrite(_led_pin, HIGH);
       break;
+    }
     case SEMIAUTOMATIC:
+    {
       unsigned long current_time_millis = millis();
-      if (current_time_millis - _last_changed >= _period_millis) {
-        if (_led_on) {
+      if (current_time_millis - _last_changed >= _period_millis) 
+      {
+        if (_led_on) 
+        {
           _led_on = true;
           digitalWrite(_led_pin, HIGH);
-        } else {
+        } 
+        else 
+        {
           _led_on = false;
           digitalWrite(_led_pin, LOW);
         }
         _last_changed = current_time_millis;
       }
       break;
+    }
     case REMOTE_CONTROL:
+    {
       _led_on = false;
       digitalWrite(_led_pin, LOW);
       break;
+    }
     default:
+    {
       break;
+    } 
+  }
 }

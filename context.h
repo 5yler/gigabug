@@ -40,6 +40,7 @@ public:
           PIDController *pos,
           ros::NodeHandle *nh,
           JetsonCommander *jcommander,
+          AutonomousLED *autonomousled,
           gigatron_hardware::Radio *radio_msg,
           ros::Publisher *radio_pub,
           gigatron_hardware::Steering *steer_msg,
@@ -65,6 +66,8 @@ private:
   //$
   ros::NodeHandle *_nh;
   JetsonCommander *_jcommander;
+
+  AutonomousLED *_autonomousled;
 
   gigatron_hardware::Radio *_radio_msg;
   ros::Publisher *_radio_pub;

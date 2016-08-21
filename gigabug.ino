@@ -47,7 +47,7 @@ ros::NodeHandle nh;       //$ node handle
 // JetsonCommander(ros::NodeHandle *nh);
 JetsonCommander jc(&nh);  //$ Jetson commander
 
-AutonomousLED aled(AUTONOMOUS_LED_PIN, &(jc->_autonomous), HALF_SECOND);
+AutonomousLED aled(AUTONOMOUS_LED_PIN, &(jc._autonomous), HALF_SECOND);
 
 //PIDController(long kp, long ki, long kd, long out_max, long out_min)
 PIDController lSp(50, 0, 1, 250, 0); //$ left drive motor PID controller
