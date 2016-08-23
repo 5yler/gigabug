@@ -163,6 +163,11 @@ Context::Context(Commander *commander, DCServo *servo,
         //$ update PID controllers
         lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
         rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
+        
+        //$ convert to motor controller format of
+        //$ servo-style timed pulses (1250-1750)
+        luSec = (unsigned int) 1500 - lSpC;
+        ruSec = (unsigned int) 1500 - rSpC;
 
       }
       else { //$ RC mode and semiautomatic mode (or estopped)
@@ -176,12 +181,14 @@ Context::Context(Commander *commander, DCServo *servo,
           _rSp->ResetIntegrator();
           //$ so it won't go berserk after estop is released
         }
-      }
 
       //$ convert to motor controller format of
       //$ servo-style timed pulses (1250-1750)
       luSec = (unsigned int) 1500 + lSpC;
       ruSec = (unsigned int) 1500 + rSpC;
+      }
+
+
 
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
@@ -197,7 +204,7 @@ Context::Context(Commander *commander, DCServo *servo,
         pC = _commander->GetAngleCmd();
       }
       else  { //$ mixed mode and fully autonomous mode
-        pC = _jcommander->GetAngleCmd();
+        pC = - _jcommander->GetAngleCmd();
       }  
       pS = _servo->GetPos();
 
