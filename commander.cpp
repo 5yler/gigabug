@@ -78,7 +78,9 @@ int JetsonCommander::GetRightRPMCmd() {
 }
 
 unsigned char JetsonCommander::GetAngleCmd() {
+
   return _angle;
+
 }
 
 

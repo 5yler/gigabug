@@ -15,7 +15,7 @@
 
 DCServo::DCServo(int pwmPin) {
   _servo.attach(pwmPin);
-  _last_pos = 90;
+  _last_pos = 128;
 }
 
 // void DCServo::ConfigPot(int minV, int midV, int maxV) {
@@ -26,8 +26,18 @@ DCServo::DCServo(int pwmPin) {
 
 //$ 90 is center, 0 is turned right, 180 is far left
 void DCServo::SetPos(int pos) {
-  _servo.write(pos);
   _last_pos = pos;
+
+  long pw = (long) pos;
+  
+  if (pw < 0) pw = 0;
+  if (pw > 255) pw = 255;
+
+  //$ convert from 0-255 range to 0-180 range
+  pw *= 180;
+  pw /= 255;
+
+  _servo.write((unsigned char) pw);  
 }
 
 unsigned char DCServo::GetPos() {

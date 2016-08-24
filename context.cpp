@@ -200,19 +200,20 @@ Context::Context(Commander *commander, DCServo *servo,
 
 
     if (d_pt > _pInterval) { //$ position (steering servo) loop
+      
       if (_jcommander->_autonomous == 0) { //$ RC mode
         pC = _commander->GetAngleCmd();
       }
       else  { //$ mixed mode and fully autonomous mode
-        pC = - _jcommander->GetAngleCmd();
+        pC = _jcommander->GetAngleCmd();  
       }  
+
       pS = _servo->GetPos();
 
       //$ command analogWrite/digitalWrite
       _servo->SetPos(pC);
-
+      
       _last_pt = t;
-
     }
 
     if (d_pub > _pubInterval) { //$ publishing loop
