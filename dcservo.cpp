@@ -47,7 +47,6 @@ void DCServo::SetVelocity(int vel) {
 /*$ DEPRECATED */
 unsigned char DCServo::GetPos() {
   long adu = analogRead(_posPin);
-  // dp(adu); //$ uncomment for pot calibration
   long tmp = (adu - _minV) << 8 ;;
   tmp /= (_maxV - _minV);
   if (tmp < 0) tmp = 0;
@@ -59,7 +58,7 @@ unsigned char DCServo::GetPos() {
 //$ takes pot limits and middle value and linearizes the output
 unsigned char DCServo::GetPosLinearized() {
   long adu = analogRead(_posPin);
-  // dp(adu); //$ uncomment for pot calibration
+//   dp(adu); //$ uncomment for pot calibration
   long tmp;
   if (adu < _midV) {
     tmp = (adu - _minV) << 7 ;;
