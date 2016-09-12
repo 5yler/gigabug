@@ -180,8 +180,8 @@ void Context::Start() {
 
       //$ convert to motor controller format of
       //$ servo-style timed pulses (1250-1750)
-      luSec = (unsigned int) 1500 + lSpC;
-      ruSec = (unsigned int) 1500 + rSpC;
+      luSec = (unsigned int) 1500 + 2*lSpC;
+      ruSec = (unsigned int) 1500 + 2*rSpC;
 
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
