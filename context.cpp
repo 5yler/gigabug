@@ -150,7 +150,7 @@ void Context::Start() {
 
     if (d_st > _sInterval) {  //$ speed (drive motor) loop
       //$ left and right speed commands
-
+      
       lRPM_sensed = _left->GetRPM();
       rRPM_sensed = _right->GetRPM();
       //$ get values from RC commander or Jetson commander
@@ -167,8 +167,8 @@ void Context::Start() {
       }
       else { //$ RC mode and semiautomatic mode (or estopped)
 
-        lSpC = _commander->GetLeftRPMCmd();
-        rSpC = _commander->GetRightRPMCmd();
+        lSpC = 2*(_commander->GetLeftRPMCmd());
+        rSpC = 2*(_commander->GetRightRPMCmd());
 
         //$ reset PID controller integrator term to zero if estopped
         if (_jcommander->_estop) {
@@ -177,11 +177,10 @@ void Context::Start() {
           //$ so it won't go berserk after estop is released
         }
       }
-
       //$ convert to motor controller format of
-      //$ servo-style timed pulses (1250-1750)
-      luSec = (unsigned int) 1500 + 2*lSpC;
-      ruSec = (unsigned int) 1500 + 2*rSpC;
+        //$ servo-style timed pulses (1250-1750)
+        luSec = (unsigned int) 1500 + lSpC;
+        ruSec = (unsigned int) 1500 + rSpC;
 
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
