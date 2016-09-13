@@ -208,8 +208,6 @@ Context::Context(Commander *commander, DCServo *servo,
         pC = _jcommander->GetAngleCmd();  
       }  
 
-      pS = _servo->GetPos();
-
       //$ command analogWrite/digitalWrite
       _servo->SetPos(pC);
       
@@ -241,7 +239,7 @@ Context::Context(Commander *commander, DCServo *servo,
 
 
       //$ write steering angle and servo PWM command to message
-      _steer_msg->angle = pS;
+      _steer_msg->angle = pC;
       _steer_msg->angle_command = pC;
       
       //$ publish message
