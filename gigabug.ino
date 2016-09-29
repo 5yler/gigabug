@@ -93,6 +93,15 @@ void ModeCallback(const std_msgs::UInt8& mode) {
     autonomy type, not necessarily whether or not the car 
     is autonomous.
     */
+
+    if (jc._autonomous > 0)
+    {
+      /*$ 
+      If the car is not in RC mode when the callback occurs,
+      we want the change to take effect immediately.
+      */
+      jc._autonomous = jc._autonomy_type;
+    }
 }
 
 
