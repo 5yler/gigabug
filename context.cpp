@@ -102,9 +102,6 @@ Context::Context(Commander *commander, DCServo *servo,
 
     _last_st = _last_pt = millis();
 
-  //unsigned int oldMode = _jcommander->_autonomous;
-    unsigned int oldMode = 2;
-
     for (;;) {
 
     _nh->spinOnce(); //$ spin node handle
@@ -120,15 +117,11 @@ Context::Context(Commander *commander, DCServo *servo,
     {
       if (_jcommander->_autonomous == 0) 
       { //$ RC
-        _jcommander->_autonomous = oldMode;
+        _jcommander->_autonomous = _jcommander->_autonomy_type;
         //$ HALP IT'S GOING IN REVERSE
       }
     }
     else {
-      if (_jcommander->_autonomous > 0) 
-      { //$ AUTO or SEMIAUTOMATIC
-        oldMode = _jcommander->_autonomous;
-      }
       _jcommander->_autonomous = 0;
     }
 

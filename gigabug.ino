@@ -71,16 +71,37 @@ void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
   Enable lidar-based estop. 
 */
 void StopCallback(const std_msgs::Bool& mode) {
-//  if (jc._estop != mode.data) {
     jc._estop = mode.data;
-//  }
 }
+
+/*$ 
+  Change default autonomy mode
+*/
+void ModeCallback(const std_msgs::UInt8& mode) {
+    if (mode.data == 1)
+    {
+      jc._autonomy_type = 1; //$ SEMIAUTOMATIC
+    }
+    else if (mode.data == 2)
+    {
+      jc._autonomy_type = 2; //$ 2AUTO4U
+    }
+    /*$ 
+    Note that any other value will have no effect, if the 
+    mode has value 0 that will get overridden by the RC
+    kill witch. This callback only toggles the default 
+    autonomy type, not necessarily whether or not the car 
+    is autonomous.
+    */
+}
+
 
 /*$ 
   Set PID controller gains for both drive motors with a
   Vector3 ROS message (kp, ki, kd) published on the /gains
   topic.
 */
+/* DEPRECATED */
 void GainsCallback(const geometry_msgs::Vector3& gain) {
   long kp = (long) gain.x;
   long ki = (long) gain.y;
@@ -116,8 +137,8 @@ void setup() {
   nh.subscribe(sub);
   ros::Subscriber<std_msgs::Bool> stop_sub("arduino/command/stop", StopCallback);
   nh.subscribe(stop_sub);
-//  ros::Subscriber<geometry_msgs::Vector3> gainsub("arduino/command/gains", GainsCallback);
-//  nh.subscribe(gainsub);
+  ros::Subscriber<std_msgs::UInt8> mode_sub("arduino/command/mode", ModeCallback);
+  nh.subscribe(mode_sub);
 
   pinMode(RC_STEERING_PIN, INPUT);
   pinMode(RC_THROTTLE_PIN, INPUT);

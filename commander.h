@@ -47,7 +47,8 @@ public:
   unsigned char _angle;
   long _rpm_left, _rpm_right;
   
-  int _autonomous;
+  unsigned int _autonomous;
+  unsigned int _autonomy_type;
   bool _estop;
 /*
   boolean _jetsonMode; //$ true for Jetson control, false for RC
