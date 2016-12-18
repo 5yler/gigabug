@@ -36,7 +36,8 @@ Context::Context(Commander *commander, DCServo *servo,
                  ros::Publisher *mot_pub,
                  std_msgs::UInt8 *stop_msg,
                  ros::Publisher *stop_pub
-                ) {
+                ) 
+{
   _commander = commander;
   _servo = servo;
   _left = left;
@@ -144,23 +145,36 @@ void Context::Start() {
     unsigned char pS; //$ PWM sensed
 
     if (d_st > _sInterval) {  //$ speed (drive motor) loop
-      //$ left and right speed commands
       
       lRPM_sensed = _left->GetRPM();
       rRPM_sensed = _right->GetRPM();
+
       //$ get values from RC commander or Jetson commander
-      if ((_jcommander->_autonomous > 1) && !(_jcommander->_estop)) { //$ fully autonomous mode (and not estopped)
 
-        //$ commanded values in desired rpm
-        int lRPM_cmd = _jcommander->GetLeftRPMCmd();
-        int rRPM_cmd = _jcommander->GetRightRPMCmd();
+      if (_jcommander->_autonomous > 1) //$ fully autonomous mode
+      { 
 
+        int lRPM_cmd, rRPM_cmd; //$ RPM commands
+
+        if (_jcommander->_estop) //$ estopped
+        {
+          //$ MAKE IT STOP!
+          lRPM_cmd = 0;
+          rRPM_cmd = 0;
+        }
+        else //$ not estopped
+        {
+          //$ commanded values in desired rpm
+          lRPM_cmd = _jcommander->GetLeftRPMCmd();
+          rRPM_cmd = _jcommander->GetRightRPMCmd();
+        }
         //$ update PID controllers
         lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
         rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
-
+        }
       }
-      else { //$ RC mode and semiautomatic mode (or estopped)
+      else //$ RC mode and semiautomatic mode
+      { 
 
         lSpC = 2*(_commander->GetLeftRPMCmd());
         rSpC = 2*(_commander->GetRightRPMCmd());
@@ -173,9 +187,9 @@ void Context::Start() {
         }
       }
       //$ convert to motor controller format of
-        //$ servo-style timed pulses (1250-1750)
-        luSec = (unsigned int) 1500 + lSpC;
-        ruSec = (unsigned int) 1500 + rSpC;
+      //$ servo-style timed pulses (1250-1750)
+      luSec = (unsigned int) 1500 + lSpC;
+      ruSec = (unsigned int) 1500 + rSpC;
 
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
