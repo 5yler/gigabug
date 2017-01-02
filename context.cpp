@@ -17,27 +17,27 @@
 #include "commander.h"
 #include "context.h"
 
-Servo leftMotor;
-Servo rightMotor;
+ Servo leftMotor;
+ Servo rightMotor;
 
-Context::Context(Commander *commander, DCServo *servo,
-                 SpeedSensor *left, SpeedSensor *right,
-                 int lPwm, int rPwm,
-                 int lRev, int rRev,
-                 PIDController *lSp, PIDController *rSp,
-                 PIDController *pos,
-                 ros::NodeHandle *nh,
-                 JetsonCommander *jcommander,
-                 gigatron_hardware::Radio *radio_msg,
-                 ros::Publisher *radio_pub,
-                 gigatron_hardware::Steering *steer_msg,
-                 ros::Publisher *steer_pub,
-                 gigatron_hardware::Motors *mot_msg,
-                 ros::Publisher *mot_pub,
-                 std_msgs::UInt8 *stop_msg,
-                 ros::Publisher *stop_pub
-                ) 
-{
+ Context::Context(Commander *commander, DCServo *servo,
+   SpeedSensor *left, SpeedSensor *right,
+   int lPwm, int rPwm,
+   int lRev, int rRev,
+   PIDController *lSp, PIDController *rSp,
+   PIDController *pos,
+   ros::NodeHandle *nh,
+   JetsonCommander *jcommander,
+   gigatron_hardware::Radio *radio_msg,
+   ros::Publisher *radio_pub,
+   gigatron_hardware::Steering *steer_msg,
+   ros::Publisher *steer_pub,
+   gigatron_hardware::Motors *mot_msg,
+   ros::Publisher *mot_pub,
+   std_msgs::UInt8 *stop_msg,
+   ros::Publisher *stop_pub
+   ) 
+ {
   _commander = commander;
   _servo = servo;
   _left = left;
@@ -76,36 +76,36 @@ Context::Context(Commander *commander, DCServo *servo,
   @param  sInterval  [ms] speed loop interval
   @param  pInterval  [ms] position loop interval
   */
-void Context::ConfigureLoop(int sInterval, int pInterval, int pubInterval) {
-  _sInterval = sInterval;
-  _pInterval = pInterval;
-  _pubInterval = pubInterval;
-}
+  void Context::ConfigureLoop(int sInterval, int pInterval, int pubInterval) {
+    _sInterval = sInterval;
+    _pInterval = pInterval;
+    _pubInterval = pubInterval;
+  }
 
 
-void Context::Start() {
+  void Context::Start() {
 
   //$ clear messages
-  _radio_msg->speed_left = 0;
-  _radio_msg->speed_right = 0;
-  _radio_msg->angle = 128;
-  _radio_msg->kill = 0;
+    _radio_msg->speed_left = 0;
+    _radio_msg->speed_right = 0;
+    _radio_msg->angle = 128;
+    _radio_msg->kill = 0;
 
-  _steer_msg->angle = 128;
-  _steer_msg->angle_command = 128;
+    _steer_msg->angle = 128;
+    _steer_msg->angle_command = 128;
 
-  _mot_msg->rpm_left = 0;
-  _mot_msg->rpm_right = 0;
-  _mot_msg->usec_left = 1500;
-  _mot_msg->usec_right = 1500;
+    _mot_msg->rpm_left = 0;
+    _mot_msg->rpm_right = 0;
+    _mot_msg->usec_left = 1500;
+    _mot_msg->usec_right = 1500;
 
   //    _stop_msg->data = 0;
 
-  _last_st = _last_pt = millis();
+    _last_st = _last_pt = millis();
 
-  unsigned int oldMode = 2;
+    unsigned int oldMode = 2;
 
-  for (;;) {
+    for (;;) {
 
     _nh->spinOnce(); //$ spin node handle
 
@@ -145,7 +145,7 @@ void Context::Start() {
     unsigned char pS; //$ PWM sensed
 
     if (d_st > _sInterval) {  //$ speed (drive motor) loop
-      
+
       lRPM_sensed = _left->GetRPM();
       rRPM_sensed = _right->GetRPM();
 
@@ -171,7 +171,6 @@ void Context::Start() {
         //$ update PID controllers
         lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
         rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
-        }
       }
       else //$ RC mode and semiautomatic mode
       { 
@@ -180,12 +179,14 @@ void Context::Start() {
         rSpC = 2*(_commander->GetRightRPMCmd());
 
         //$ reset PID controller integrator term to zero if estopped
-        if (_jcommander->_estop) {
+        if (_jcommander->_estop) 
+        {
           _lSp->ResetIntegrator();
           _rSp->ResetIntegrator();
           //$ so it won't go berserk after estop is released
         }
       }
+      
       //$ convert to motor controller format of
       //$ servo-style timed pulses (1250-1750)
       luSec = (unsigned int) 1500 + lSpC;
