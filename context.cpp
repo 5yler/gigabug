@@ -169,7 +169,6 @@ Context::Context(Commander *commander, DCServo *servo,
         //$ update PID controllers
         lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
         rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
-        }
       }
       else //$ RC mode and semiautomatic mode
       { 
@@ -197,6 +196,7 @@ Context::Context(Commander *commander, DCServo *servo,
           luSec = (unsigned int) 1500 + lSpC;
           ruSec = (unsigned int) 1500 + rSpC;
         }
+      }
 
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
