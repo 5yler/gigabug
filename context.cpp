@@ -175,23 +175,30 @@
       else //$ RC mode and semiautomatic mode
       { 
 
-        lSpC = 2*(_commander->GetLeftRPMCmd());
-        rSpC = 2*(_commander->GetRightRPMCmd());
-
-        //$ reset PID controller integrator term to zero if estopped
         if (_jcommander->_estop) 
         {
+        //$ reset PID controller integrator term to zero if estopped          
           _lSp->ResetIntegrator();
           _rSp->ResetIntegrator();
           //$ so it won't go berserk after estop is released
+          
+          //$ no motor pulses
+          luSec = (unsigned int) 0;
+          ruSec = (unsigned int) 0;
+
+        }
+        else //$ not estopped
+        {
+          lSpC = 2*(_commander->GetLeftRPMCmd());
+          rSpC = 2*(_commander->GetRightRPMCmd());
+
+          //$ convert to motor controller format of
+          //$ servo-style timed pulses (1250-1750)
+          luSec = (unsigned int) 1500 + lSpC;
+          ruSec = (unsigned int) 1500 + rSpC;
         }
       }
       
-      //$ convert to motor controller format of
-      //$ servo-style timed pulses (1250-1750)
-      luSec = (unsigned int) 1500 + lSpC;
-      ruSec = (unsigned int) 1500 + rSpC;
-
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
       rightMotor.writeMicroseconds(ruSec);
