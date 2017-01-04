@@ -144,7 +144,7 @@
     unsigned char pC; //$ PWM command
     unsigned char pS; //$ PWM sensed
 
-    if (d_st > _sInterval) {  //$ speed (drive motor) loop
+if (d_st > _sInterval) {  //$ speed (drive motor) loop
 
       lRPM_sensed = _left->GetRPM();
       rRPM_sensed = _right->GetRPM();
@@ -174,31 +174,32 @@
       }
       else //$ RC mode and semiautomatic mode
       { 
+        //$ get commands from RC transmitter
+        lSpC = 2*(_commander->GetLeftRPMCmd());
+        rSpC = 2*(_commander->GetRightRPMCmd());
 
         if (_jcommander->_estop) 
         {
-        //$ reset PID controller integrator term to zero if estopped          
+          //$ reset PID controller integrator term to zero if estopped
+          //$ TODO is this even necessary? the PID controllers won't update if it's not in 2AUTO4U mode
           _lSp->ResetIntegrator();
           _rSp->ResetIntegrator();
           //$ so it won't go berserk after estop is released
           
-          //$ no motor pulses
-          luSec = (unsigned int) 0;
-          ruSec = (unsigned int) 0;
-
-        }
-        else //$ not estopped
-        {
-          lSpC = 2*(_commander->GetLeftRPMCmd());
-          rSpC = 2*(_commander->GetRightRPMCmd());
-
-          //$ convert to motor controller format of
-          //$ servo-style timed pulses (1250-1750)
-          luSec = (unsigned int) 1500 + lSpC;
-          ruSec = (unsigned int) 1500 + rSpC;
+          if (_jcommander->_autonomous == 1) //$ estopped in semiautomatic mode
+          {
+            //$ update PID controllers with target velocity zero
+            lSpC = _lSp->Update(0, lRPM_sensed);
+            rSpC = _rSp->Update(0, rRPM_sensed); //$ does it make sense to use PID for only this part of semiautomatic? if we set lSpC = 0 it will coast more...     
+          }
         }
       }
       
+      //$ convert to motor controller format of
+      //$ servo-style timed pulses (1250-1750)
+      luSec = (unsigned int) 1500 + lSpC;
+      ruSec = (unsigned int) 1500 + rSpC;
+
       //$ write to motor controller
       leftMotor.writeMicroseconds(luSec);
       rightMotor.writeMicroseconds(ruSec);
