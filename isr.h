@@ -26,11 +26,11 @@
 #define R_ENCODER_REVERSED //$ define that the left encoder is reversed to handle directionality
 
 //$ motors
-#define L_MOTOR_PWM_PIN 9
-#define L_MOTOR_REVERSE_PIN 30
+#define R_MOTOR_PWM_PIN 9
+#define R_MOTOR_REVERSE_PIN 30
 
-#define R_MOTOR_PWM_PIN 10
-#define R_MOTOR_REVERSE_PIN 31
+#define L_MOTOR_PWM_PIN 10
+#define L_MOTOR_REVERSE_PIN 31
 
 //$ steering servo
 #define STEERING_PWM_PIN 5
