@@ -231,8 +231,8 @@ if (d_st > _sInterval) {  //$ speed (drive motor) loop
       //$ write wheel velocities
       _mot_msg->rpm_left = lRPM_sensed;
       _mot_msg->rpm_right = rRPM_sensed;
-      _mot_msg->usec_left = ruSec;
-      _mot_msg->usec_right = luSec;
+      _mot_msg->usec_left = luSec;
+      _mot_msg->usec_right = ruSec;
 
       //$ publish message
       _mot_pub->publish(_mot_msg);
