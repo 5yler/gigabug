@@ -167,8 +167,8 @@ Context::Context(Commander *commander, DCServo *servo,
           rRPM_cmd = _jcommander->GetRightRPMCmd();
         }
         //$ update PID controllers
-        lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
-        rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
+        lSpC = - _lSp->Update(lRPM_cmd, lRPM_sensed);
+        rSpC = - _rSp->Update(rRPM_cmd, rRPM_sensed);
       }
       else //$ RC mode and semiautomatic mode
       { 
@@ -185,10 +185,10 @@ Context::Context(Commander *commander, DCServo *servo,
           _rSp->ResetIntegrator();
           //$ so it won't go berserk after estop is released
 
-          if (_jcommander->_autonomous ==1) //$ estopped in semiautomatic mode
+          if (_jcommander->_autonomous == 1) //$ estopped in semiautomatic mode
           {
-            lSpC = _lSp->Update(0, lRPM_sensed);
-            rSpC = _rSp->Update(0, rRPM_sensed); //$ does it make sense to use PID for only this part of semiautomatic? if we set lSpC = 0 it will coast more...     
+            lSpC = - _lSp->Update(0, lRPM_sensed);
+            rSpC = - _rSp->Update(0, rRPM_sensed); //$ does it make sense to use PID for only this part of semiautomatic? if we set lSpC = 0 it will coast more...     
           }
         }
       }
@@ -226,8 +226,8 @@ Context::Context(Commander *commander, DCServo *servo,
       //$ write wheel velocities
       _mot_msg->rpm_left = lRPM_sensed;
       _mot_msg->rpm_right = rRPM_sensed;
-      _mot_msg->usec_left = ruSec;
-      _mot_msg->usec_right = luSec;
+      _mot_msg->usec_left = luSec;
+      _mot_msg->usec_right = ruSec;
 
       //$ publish message
       _mot_pub->publish(_mot_msg);
