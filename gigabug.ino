@@ -61,6 +61,8 @@ gigatron_hardware::Steering steer_msg;
 gigatron_hardware::Motors mot_msg;
 std_msgs::UInt8 mode_msg;
 
+LogicBatterySensor logic_bat(A3, 270000, 56000);
+
 void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
   jc._angle = cmd.angle_command;
   jc._rpm_left = cmd.rpm_left;
@@ -185,7 +187,7 @@ void setup() {
           gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
-  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub);
+  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub, &logic_bat);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
   context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL, PUB_INTERVAL);

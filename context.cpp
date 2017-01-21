@@ -35,7 +35,8 @@
    gigatron_hardware::Motors *mot_msg,
    ros::Publisher *mot_pub,
    std_msgs::UInt8 *stop_msg,
-   ros::Publisher *stop_pub
+   ros::Publisher *stop_pub,
+   LogicBatterySensor *logic_bat
    ) 
  {
   _commander = commander;

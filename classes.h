@@ -75,6 +75,16 @@ private:
   int _last_in;
   long _integral;
 };
+
+class LogicBatterySensor {
+public:
+  LogicBatterySensor(int sense_pin, long r_top, long r_bottom);
+  double GetLogicVoltage();
+private:
+  int _sense_pin;
+  long _r_top;
+  long _r_bottom;
+};
   
 
 #endif
