@@ -21,6 +21,6 @@ LogicBatterySensor::LogicBatterySensor(int sense_pin, long r_top, long r_bottom)
 }
 
 double LogicBatterySensor::GetLogicVoltage() {
-  int pin_reading = analogRead(sense_pin);
-  return pin_reading * ADC_TO_PIN_VOLTAGE * (r_top + r_bottom)/((double) r_bottom);
+  int pin_reading = analogRead(_sense_pin);
+  return pin_reading * ADC_TO_PIN_VOLTAGE * (_r_top + _r_bottom)/((double) _r_bottom);
 }
