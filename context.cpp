@@ -28,6 +28,7 @@
    PIDController *pos,
    ros::NodeHandle *nh,
    JetsonCommander *jcommander,
+   LogicBatterySensor *logic_bat,
    gigatron_hardware::Radio *radio_msg,
    ros::Publisher *radio_pub,
    gigatron_hardware::Steering *steer_msg,
@@ -36,7 +37,8 @@
    ros::Publisher *mot_pub,
    std_msgs::UInt8 *stop_msg,
    ros::Publisher *stop_pub,
-   LogicBatterySensor *logic_bat
+   std_msgs::Float32 *voltage_msg,
+   ros::Publisher *voltage_pub
    ) 
  {
   _commander = commander;
@@ -50,6 +52,7 @@
   _lSp = lSp;
   _rSp = rSp;
   _pos = pos;
+  _battery_sensor = logic_bat;
 
   _nh = nh; //$ ROS node handle
   _jcommander = jcommander; //$ Jetson commander
@@ -63,6 +66,8 @@
   _mot_pub = mot_pub;
   _stop_msg = stop_msg;
   _stop_pub = stop_pub;
+  _voltage_msg = voltage_msg;
+  _voltage_pub = voltage_pub;
 
   pinMode(_lPwm, OUTPUT);
   pinMode(_rPwm, OUTPUT);

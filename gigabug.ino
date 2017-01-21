@@ -31,6 +31,8 @@
 #include <gigatron_hardware/Radio.h>
 #include <gigatron_hardware/Steering.h>
 #include <gigatron_hardware/Motors.h>
+#include <gigatron_hardware/Motors.h>
+#include <std_msgs/Float32.h>
 
 #define LOOP_INTERVAL 10
 #define S_LOOP_INTERVAL 100
@@ -60,6 +62,7 @@ gigatron_hardware::Radio radio_msg;
 gigatron_hardware::Steering steer_msg;
 gigatron_hardware::Motors mot_msg;
 std_msgs::UInt8 mode_msg;
+std_msgs::Float32 voltage_msg;
 
 LogicBatterySensor logic_bat(A3, 270000, 56000);
 
@@ -142,6 +145,8 @@ void setup() {
   nh.advertise(steer_pub);
   ros::Publisher mode_pub("arduino/mode", &mode_msg);
   nh.advertise(mode_pub);
+  ros::Publisher voltage_pub("arduino/voltage", &voltage_msg);
+  nh.advertise(voltage_pub);
 
   //$ set up subscribers
   ros::Subscriber<gigatron_hardware::MotorCommand> sub("arduino/command/motors", CmdCallback);
@@ -187,7 +192,7 @@ void setup() {
           gigatron_hardware::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
-  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub, &logic_bat);
+  Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &logic_bat, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub, &voltage_msg, &voltage_pub);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
   context.ConfigureLoop(S_LOOP_INTERVAL, LOOP_INTERVAL, PUB_INTERVAL);
