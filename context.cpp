@@ -105,6 +105,8 @@
     _mot_msg->usec_left = 1500;
     _mot_msg->usec_right = 1500;
 
+    _voltage_msg->data = -1;
+
   //    _stop_msg->data = 0;
 
     _last_st = _last_pt = millis();
@@ -263,6 +265,10 @@ if (d_st > _sInterval) {  //$ speed (drive motor) loop
 
       //$ publish message
       _steer_pub->publish(_steer_msg);
+
+      //$ battery voltage 
+      _voltage_msg->data = _battery_sensor->GetLogicVoltage();
+      _voltage_pub->publish(_voltage_msg);
 
       _last_pub = t;
 
