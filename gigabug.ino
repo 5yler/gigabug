@@ -38,10 +38,10 @@
 #define S_LOOP_INTERVAL 100
 #define PUB_INTERVAL 100
 
-//$ steering pot calibration 2017-01-21
-int minADU = 493; //$ max right
-int midADU = 598; //$ value at zero steering angle
-int maxADU = 675; //$ max left
+//$ steering pot calibration 2017-01-22
+int minADU = 498; //$ max right
+int midADU = 532; //$ value at zero steering angle
+int maxADU = 666; //$ max left
 
 ros::NodeHandle nh;       //$ node handle
 
@@ -179,19 +179,25 @@ void setup() {
   RCCommander rc(&sp, &pos, &kill);
 
   /* Context(Commander *commander, DCServo *servo,
-          SpeedSensor *left, SpeedSensor *right,
-          int L_MOTOR_PWM_PIN, L_MOTOR_PWM_PINrPwm,
-          PIDController *lSp, PIDController *rSp,
-          PIDController *pos,
-          ros::NodeHandle *nh,
-          JetsonCommander *jcommander,
-          gigatron_hardware::Radio *radio_msg,
-          ros::Publisher *radio_pub,
-          gigatron_hardware::Steering *steer_msg,
-          ros::Publisher *steer_pub,
-          gigatron_hardware::Motors *mot_msg,
-          ros::Publisher *mot_pub
-          ) */
+             SpeedSensor *left, SpeedSensor *right,
+             int lPwm, int rPwm,
+             int lRev, int rRev,
+             PIDController *lSp, PIDController *rSp,
+             PIDController *pos,
+             ros::NodeHandle *nh,
+             JetsonCommander *jcommander,
+             LogicBatterySensor *logic_bat,
+             gigatron_hardware::Radio *radio_msg,
+             ros::Publisher *radio_pub,
+             gigatron_hardware::Steering *steer_msg,
+             ros::Publisher *steer_pub,
+             gigatron_hardware::Motors *mot_msg,
+             ros::Publisher *mot_pub,
+             std_msgs::UInt8 *stop_msg,
+             ros::Publisher *stop_pub,
+             std_msgs::Float32 *voltage_msg,
+             ros::Publisher *voltage_pub
+            ) */
   Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &logic_bat, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub, &voltage_msg, &voltage_pub);
 
   // Context::ConfigureLoop(int sInterval, int pInterval);
