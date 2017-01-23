@@ -25,13 +25,13 @@
 #include <std_msgs/Bool.h>          //$ for estop subscriber
 
 //$ motor commands
-#include <gigatron_hardware/MotorCommand.h>
+#include <gigatron_msgs/MotorCommand.h>
 
 //$ debugging messages
-#include <gigatron_hardware/Radio.h>
-#include <gigatron_hardware/Steering.h>
-#include <gigatron_hardware/Motors.h>
-#include <gigatron_hardware/Motors.h>
+#include <gigatron_msgs/Radio.h>
+#include <gigatron_msgs/Steering.h>
+#include <gigatron_msgs/Motors.h>
+#include <gigatron_msgs/Motors.h>
 #include <std_msgs/Float32.h>
 
 #define LOOP_INTERVAL 10
@@ -58,15 +58,15 @@ PIDController rSp(40, 8, 1, 500, -500); //$ right drive motor PID controller
 
 PIDController pPos(150, 0, 15, 255, -255); //$ steering servo PID controller
 
-gigatron_hardware::Radio radio_msg;
-gigatron_hardware::Steering steer_msg;
-gigatron_hardware::Motors mot_msg;
+gigatron_msgs::Radio radio_msg;
+gigatron_msgs::Steering steer_msg;
+gigatron_msgs::Motors mot_msg;
 std_msgs::UInt8 mode_msg;
 std_msgs::Float32 voltage_msg;
 
 LogicBatterySensor logic_bat(A3, 270000, 56000);
 
-void CmdCallback(const gigatron_hardware::MotorCommand& cmd) {
+void CmdCallback(const gigatron_msgs::MotorCommand& cmd) {
   jc._angle = cmd.angle_command;
   jc._rpm_left = cmd.rpm_left;
   jc._rpm_right = cmd.rpm_right;
@@ -149,7 +149,7 @@ void setup() {
   nh.advertise(voltage_pub);
 
   //$ set up subscribers
-  ros::Subscriber<gigatron_hardware::MotorCommand> sub("arduino/command/motors", CmdCallback);
+  ros::Subscriber<gigatron_msgs::MotorCommand> sub("arduino/command/motors", CmdCallback);
   nh.subscribe(sub);
   ros::Subscriber<std_msgs::Bool> stop_sub("arduino/command/stop", StopCallback);
   nh.subscribe(stop_sub);
@@ -185,11 +185,11 @@ void setup() {
           PIDController *pos,
           ros::NodeHandle *nh,
           JetsonCommander *jcommander,
-          gigatron_hardware::Radio *radio_msg,
+          gigatron_msgs::Radio *radio_msg,
           ros::Publisher *radio_pub,
-          gigatron_hardware::Steering *steer_msg,
+          gigatron_msgs::Steering *steer_msg,
           ros::Publisher *steer_pub,
-          gigatron_hardware::Motors *mot_msg,
+          gigatron_msgs::Motors *mot_msg,
           ros::Publisher *mot_pub
           ) */
   Context context(&rc, &servo, &left, &right, L_MOTOR_PWM_PIN, R_MOTOR_PWM_PIN, L_MOTOR_REVERSE_PIN, R_MOTOR_REVERSE_PIN, &lSp, &rSp, &pPos, &nh, &jc, &logic_bat, &radio_msg, &radio_pub, &steer_msg, &steer_pub, &mot_msg, &mot_pub, &mode_msg, &mode_pub, &voltage_msg, &voltage_pub);

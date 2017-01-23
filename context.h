@@ -22,12 +22,12 @@
 #include <std_msgs/Float32.h>
 
 //$ motor commands
-#include <gigatron_hardware/MotorCommand.h>
+#include <gigatron_msgs/MotorCommand.h>
 
 //$ debugging messages
-#include <gigatron_hardware/Radio.h>
-#include <gigatron_hardware/Steering.h>
-#include <gigatron_hardware/Motors.h>
+#include <gigatron_msgs/Radio.h>
+#include <gigatron_msgs/Steering.h>
+#include <gigatron_msgs/Motors.h>
 #include <std_msgs/UInt8.h>
 
 class Context {
@@ -41,11 +41,11 @@ public:
           ros::NodeHandle *nh,
           JetsonCommander *jcommander,
           LogicBatterySensor *logic_bat,
-          gigatron_hardware::Radio *radio_msg,
+          gigatron_msgs::Radio *radio_msg,
           ros::Publisher *radio_pub,
-          gigatron_hardware::Steering *steer_msg,
+          gigatron_msgs::Steering *steer_msg,
           ros::Publisher *steer_pub,
-          gigatron_hardware::Motors *mot_msg,
+          gigatron_msgs::Motors *mot_msg,
           ros::Publisher *mot_pub,
           std_msgs::UInt8 *stop_msg,
           ros::Publisher *stop_pub,
@@ -70,13 +70,13 @@ private:
   ros::NodeHandle *_nh;
   JetsonCommander *_jcommander;
 
-  gigatron_hardware::Radio *_radio_msg;
+  gigatron_msgs::Radio *_radio_msg;
   ros::Publisher *_radio_pub;
 
-  gigatron_hardware::Steering *_steer_msg;
+  gigatron_msgs::Steering *_steer_msg;
   ros::Publisher *_steer_pub;
 
-  gigatron_hardware::Motors *_mot_msg;
+  gigatron_msgs::Motors *_mot_msg;
   ros::Publisher *_mot_pub;
 
   std_msgs::UInt8 *_stop_msg;
