@@ -63,6 +63,8 @@ JetsonCommander::JetsonCommander(ros::NodeHandle *nh) {
   _rpm_left = 0; 
   _rpm_right = 0; 
   _angle = 128;
+  _safe_stop = false;
+  _safe_stop_s1 = false;
 }
 
 int JetsonCommander::GetLeftRPMCmd() {

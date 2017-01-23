@@ -50,6 +50,8 @@ public:
   unsigned int _autonomous;
   unsigned int _autonomy_type;
   bool _estop;
+  bool _safe_stop;
+  bool _safe_stop_s1;
 /*
   boolean _jetsonMode; //$ true for Jetson control, false for RC
   boolean _semiautomaticMode; //$ true for Jetson control, false for RCprivate:

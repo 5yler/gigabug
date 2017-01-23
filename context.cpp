@@ -180,27 +180,46 @@ if (d_st > _sInterval) {  //$ speed (drive motor) loop
         lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
         rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
       }
-      else //$ RC mode and semiautomatic mode
+      else if (_jcommander->_autonomous == 1) // Semiautomatic mode
+      {
+        if (_commander->GetRightRPMCmd() < 100) // TODO bit of a hack
+        {
+          _jcommander->_safe_stop = true;
+          if (!(_jcommander->_safe_stop_s1))
+          {
+            _lSp->ResetIntegrator();
+            _rSp->ResetIntegrator();
+          }
+          lSpC = _lSp->Update(0, lRPM_sensed);
+          rSpC = _rSp->Update(0, rRPM_sensed);
+        }
+        else
+        {
+
+          int lRPM_cmd, rRPM_cmd; //$ RPM commands
+
+          if (_jcommander->_estop) //$ estopped
+          {
+            //$ MAKE IT STOP!
+            lRPM_cmd = 0;
+            rRPM_cmd = 0;
+          }
+          else //$ not estopped
+          {
+            //$ commanded values in desired rpm
+            lRPM_cmd = _jcommander->GetLeftRPMCmd();
+            rRPM_cmd = _jcommander->GetRightRPMCmd();
+          }
+          //$ update PID controllers
+          lSpC = _lSp->Update(lRPM_cmd, lRPM_sensed);
+          rSpC = _rSp->Update(rRPM_cmd, rRPM_sensed);
+        }
+      }
+      else //$ RC mode
       { 
         //$ get commands from RC transmitter
         lSpC = 2*(_commander->GetLeftRPMCmd());
         rSpC = 2*(_commander->GetRightRPMCmd());
-
-        if (_jcommander->_estop) 
-        {
-          //$ reset PID controller integrator term to zero if estopped
-          //$ TODO is this even necessary? the PID controllers won't update if it's not in 2AUTO4U mode
-          _lSp->ResetIntegrator();
-          _rSp->ResetIntegrator();
-          //$ so it won't go berserk after estop is released
-          
-          if (_jcommander->_autonomous == 1) //$ estopped in semiautomatic mode
-          {
-            //$ update PID controllers with target velocity zero
-            lSpC = _lSp->Update(0, lRPM_sensed);
-            rSpC = _rSp->Update(0, rRPM_sensed); //$ does it make sense to use PID for only this part of semiautomatic? if we set lSpC = 0 it will coast more...     
-          }
-        }
       }
       
       //$ convert to motor controller format of
@@ -215,6 +234,8 @@ if (d_st > _sInterval) {  //$ speed (drive motor) loop
       _last_st = t;
 
     }
+    // Update state latch
+    _jcommander->_safe_stop_s1 = _jcommander->_safe_stop;
 
 
     if (d_pt > _pInterval) { //$ position (steering servo) loop
