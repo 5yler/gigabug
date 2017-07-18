@@ -59,7 +59,7 @@ Download the [`digitalWriteFast`](https://storage.googleapis.com/google-code-arc
 
 ### Generate Custom ROS Message Libraries For Arduino
 Make sure you have the `metatron` repository cloned into a catkin workspace. For example: 
-````
+```
 mkdir -p ~/giga_ws/src/
 cd ~/giga_ws/src/
 catkin_init_workspace
