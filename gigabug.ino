@@ -85,7 +85,7 @@ JetsonCommander jc(&nh);  //$ Jetson commander
 PIDController lSp(200, 1, 1, 250, -250); //$ left drive motor PID controller
 PIDController rSp(200, 1, 1, 250, -250); //$ right drive motor PID controller
 
-/*$ The PID controllers for the drive motors are only active in AUTO mode. Also autonomous reverse does not work (yet).
+/*$ The PID controllers for the drive motors are only active in AUTO mode.
  */
 
 PIDController pPos(150, 0, 15, 255, -255); //$ steering servo PID controller
